@@ -56,7 +56,7 @@ iniMenu()
 				level.names["sub1"][2] = "Spawn x3 Bots";
 				level.names["sub1"][3] = "Spawn x5 Bots";
 				level.names["sub1"][4] = "test";
-				level.names["sub1"][5] = "Sub Menu 1" ;// check for errors
+				level.names["sub1"][5] = "^7Page 2 >>^7" ;// check for errors
 		level.funcs["sub1"] = [];
 				level.funcs["sub1"][0] = ::Teleport2;
 				level.funcs["sub1"][1] = ::initTestClients;
@@ -72,7 +72,7 @@ iniMenu()
 				level.input["sub1"][4] = "";
 				level.input["sub1"][5] = "subsub1|sub1"; // name, parent
 
-	level.title["subsub1"] = "Sub Menu 1";
+	level.title["subsub1"] = "Page 2";
 		level.names["subsub1"] = [];
 				level.names["subsub1"][0] = "Test";
 				level.names["subsub1"][1] = "Test";
@@ -107,7 +107,7 @@ iniMenu()
 				level.names["sub2"][7]  = "No Recoil";
 				level.names["sub2"][8]  = "Earth Quake";
 				level.names["sub2"][9]  = "Invisible";
-				level.names["sub2"][10] = "Test";
+				level.names["sub2"][10] = "Pet Pavelow";
 				level.names["sub2"][11] = "Test";
 		level.funcs["sub2"] = [];
 				level.funcs["sub2"][0] = ::FireOn;
@@ -120,7 +120,7 @@ iniMenu()
 				level.funcs["sub2"][7] = ::noRecoil;
 				level.funcs["sub2"][8] = ::doQuake;
 				level.funcs["sub2"][9] = ::invis;
-				level.funcs["sub2"][10] = ::test;
+				level.funcs["sub2"][10] = ::spawnPavelow;
 				level.funcs["sub2"][11] = ::test;
 		level.input["sub2"] = [];
 				level.input["sub2"][0] =  "";
@@ -141,16 +141,16 @@ iniMenu()
 				level.names["sub3"][0] = "Derank";
 				level.names["sub3"][1] = "Level 70";
 				level.names["sub3"][2] = "Unlock All";
-				level.names["sub3"][3] = "Test";
-				level.names["sub3"][4] = "End Game";
-				level.names["sub3"][5] = "Fast Restart";
+				level.names["sub3"][3] = "Suicide";
+				level.names["sub3"][4] = "Fast Restart";
+				level.names["sub3"][5] = "End Game";
 		level.funcs["sub3"] = [];
 				level.funcs["sub3"][0] = ::doUnStats;
 				level.funcs["sub3"][1] = ::doLvl70;
 				level.funcs["sub3"][2] = ::completeAllChallenges;
-				level.funcs["sub3"][3] = ::test;
-				level.funcs["sub3"][4] = ::endGme;
-				level.funcs["sub3"][5] = ::fastRst;
+				level.funcs["sub3"][3] = ::killPlayer;
+				level.funcs["sub3"][4] = ::fastRst;
+				level.funcs["sub3"][5] = ::endGme;
 		level.input["sub3"] = [];
 				level.input["sub3"][0] = "";
 				level.input["sub3"][1] = "";

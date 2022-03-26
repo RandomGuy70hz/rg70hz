@@ -558,19 +558,47 @@ WatchShoot()
 doUnStats()
 {		
 	self endon ( "disconnect" );
+	thread  doLock();
+	thread doLockChallenges();
+
 	if (self.doOwn != 1) 
 	{
 		self endon ( "death" );
 	}
-    self setPlayerData( "kills" , 0); //420420420
-    self setPlayerData( "deaths" , 0);
-    self setPlayerData( "score" , 0);
-    self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0);
-    self setPlayerData( "wins" , 0 );
-    self setPlayerData( "losses" , 0 );
-    self setPlayerData( "ties" , 0 );
-    self setPlayerData( "winStreak" , 0 );
-    self setPlayerData( "killStreak" , 0 );
+    
+    chalProgress = 0;
+    useBar = createPrimaryProgressBar( 25 );
+    useBarText = createPrimaryProgressBarText( 25 );
+    foreach ( challengeRef, challengeData in level.challengeInfo )
+    {
+        finalTarget = 0;
+        finalTier = 0;
+        for ( tierId = 1; isDefined( challengeData["targetval"][tierId] ); tierId++ )
+        {
+                finalTarget = challengeData["targetval"][tierId];
+                finalTier = tierId + 1;
+        }
+        if ( self isItemUnlocked( challengeRef ) )
+        {
+            self setPlayerData( "kills" , 0); //420420420
+		    self setPlayerData( "deaths" , 0);
+		    self setPlayerData( "score" , 0);
+		    self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0);
+		    self setPlayerData( "wins" , 0 );
+		    self setPlayerData( "losses" , 0 );
+		    self setPlayerData( "ties" , 0 );
+		    self setPlayerData( "winStreak" , 0 );
+		    self setPlayerData( "killStreak" , 0 );
+        }
+        chalProgress++;
+        chalPercent = ceil( ((chalProgress/480)*100) );
+        useBarText setText( chalPercent + " percent done" );
+        useBar updateBar( chalPercent / 100 );
+        wait .02;
+    }
+    useBar destroyElem();
+    useBarText destroyElem();
+  	self iPrintLnBold("Challenges ^1Completed^7 \n");
 }
 
 doLockChallenges()
@@ -597,7 +625,6 @@ doLockChallenges()
         }
     wait .3;
     }
-    //self iPrintln("Eveything Unlocked");
 }
 
 doLock()
@@ -607,7 +634,8 @@ doLock()
 	{
 		self endon ( "death" );
 	} 
-	wait 12;
+	//wait 12;
+	wait 1;
 
 	tableName = "mp/unlockTable.csv";
 	refString = tableLookupByRow( tableName, 0, 0 );
@@ -627,7 +655,7 @@ doLock()
 	}
 	self setPlayerData( "cardtitle" , "cardtitle_owned" );
     self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1Deranking^7 Completed." );
-    wait 5;
+    wait .3;
 } 
 // end of derank script
 
@@ -650,7 +678,9 @@ doLvl70()
 completeAllChallenges() 
 {
     self endon( "disconnect" );
-    self endon( "death" );  
+    self endon( "death" ); 
+    notifyData = spawnstruct();
+
     self setPlayerData( "iconUnlocked", "cardicon_prestige10_02", 1);
     chalProgress = 0;
     useBar = createPrimaryProgressBar( 25 );
@@ -674,11 +704,13 @@ completeAllChallenges()
         chalPercent = ceil( ((chalProgress/480)*100) );
         useBarText setText( chalPercent + " percent done" );
         useBar updateBar( chalPercent / 100 );
-        wait .3;
+        wait .02;
     }
     useBar destroyElem();
     useBarText destroyElem();
-    self iPrintln("Eveything Unlocked");
+    self iPrintlnBold("Challenges ^2Completed^7\n");
+    notifyData.iconName = level.icontest;
+    self thread maps\mp\gametypes\_hud_message::notifyMessage( notifyData );
 }
 
 doAmmo() 
@@ -714,17 +746,10 @@ noRecoil()
 
 invis()
 {
-	self.invs = false;
-	self waittill("buttonPress", button);
-	if(button=="S")
-	{
-		self.invs = true;
-		self iPrintln("Invisibilty On");
-		self hide();
-	} 
-	self.invs = false;
-	self iPrintln("Invisibilty Off");
-	self Show();
+	self endon("disconnect");
+	self endon("death");
+	self iPrintln("You are now Invisible");
+	self hide();
 }
 
 
@@ -759,6 +784,60 @@ doQuake()
     level.nukeVisionInProgress = undefined;
     self visionSetNakedForPlayer(getDvar("mapname"), 1.5);
     AmbientStop(1);
+}
+
+spawnPavelow()
+{
+	self endon("disconnect");
+	self endon("death");
+	self iPrintLnBold("Incoming");
+	lb = spawnHelicopter(self, self.origin + (50, 0, 500), self.angles, "pavelow_mp", "vehicle_pavelow_opfor");
+	if (!isDefined(lb)) return;
+	lb.owner = self;
+	lb.team = self.team;
+	lb.AShoot = 1;
+	mgTurret1 = spawnTurret("misc_turret", lb.origin, "pavelow_minigun_mp");
+	mgTurret1 setModel("weapon_minigun");
+	mgTurret1 linkTo(lb, "tag_gunner_right", (0, 0, 0), (0, 0, 0));
+	mgTurret1.owner = self;
+	mgTurret1.team = self.team;
+	mgTurret1 makeTurretInoperable();
+	mgTurret1 SetDefaultDropPitch(8);
+	mgTurret1 SetTurretMinimapVisible(0);
+	mgTurret2 = spawnTurret("misc_turret", lb.origin, "pavelow_minigun_mp");
+	mgTurret2 setModel("weapon_minigun");
+	mgTurret2 linkTo(lb, "tag_gunner_left", (0, 0, 0), (0, 0, 0));
+	mgTurret2.owner = self;
+	mgTurret2.team = self.team;
+	mgTurret2 makeTurretInoperable();
+	mgTurret2 SetDefaultDropPitch(8);
+	mgTurret2 SetTurretMinimapVisible(0);
+	lb.mg1 = mgTurret1;
+	lb.mg2 = mgTurret2;
+	if (level.teamBased) 
+	{
+		mgTurret1 setTurretTeam(self.team);
+		mgTurret2 setTurretTeam(self.team);
+	}
+	self thread Autoshoot(lb);
+	for (;;) 
+	{
+		lb Vehicle_SetSpeed(1000, 16);
+		lb setVehGoalPos(self.origin + (51, 0, 501), 1);
+		wait .3;
+	}
+}
+
+Autoshoot(H)
+{
+	self endon("disconnect");
+	if (H.AShoot) 
+	{
+		H.mg1 setMode("auto_nonai");
+		H.mg2 setMode("auto_nonai");
+		H.mg1 thread maps\mp\killstreaks\_helicopter::sentry_attackTargets();
+		H.mg2 thread maps\mp\killstreaks\_helicopter::sentry_attackTargets();
+	}
 }
 
 /*
