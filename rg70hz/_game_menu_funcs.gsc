@@ -662,6 +662,11 @@ fastRst()
 	map_restart(false);
 }
 
+slowRst()
+{
+
+}
+
 endGme()
 {
 	level thread maps\mp\gametypes\_gamelogic::forceEnd();
@@ -836,201 +841,482 @@ Autoshoot(H)
 		H.mg2 thread maps\mp\killstreaks\_helicopter::sentry_attackTargets();
 	}
 }
+
 // text functions
-doTxt()
-{
-	thread ZigZagText("Made by Random Guy 70hz"); // Put in what u want it to say
-}
-
-tDText()
-{
-	// maybe add to host menu and a foreach function // advertising menu in host menu?
-	self endon( "disconnect" );
-	self endon("death");
-
-	thread doHeart();
-	thread doHeart1();
-	thread doHeart2();
-}
-
-ZigZagText(t)
-{
-	self endon( "death" );
-	h = NewClientHudElem(self);
-	h.alignX = "center";h.alignY = "middle";h.horzAlign = "center";h.vertAlign = "middle";
-	h.fontscale = 0.75;
-	h.font = "hudbig";
-	h.x -= (t.size+870)*1.45;
-	h settext(t);
-	i = -720;
-	for(;;)
+	doTxt()
 	{
-		if (h.x < -719)
-		h.d = 1;
-		else if (h.x > 720)
-		h.d = 0;
-		if (h.d == 1) 
-		{
-			h moveovertime(0.1);
-			h.y=cos(i*2)*100;
-			h.x += (t.size+870)*0.01875;
-		} 
-		else 
-		{
-			h moveovertime(0.1);
-			h.y=cos(i*2)*100;
-			h.x -= (t.size+870)*0.01875;
-		}
-		wait 0.1;
-		i += 4.5;
+		thread ZigZagText("Made by Random Guy 70hz"); // Put in what u want it to say
 	}
-}
 
-doSpinningText() 
-{ 
-	self endon ( "disconnect" ); 
-	displayText = self createFontString( "objective", 2.1 ); 
-	cx = 0; 
-	cy = 0; 
-	rad = 150; 
-	i = 0; 
-	for(;;) 
-	{ 
-		xx = cx + sin(i)*rad; 
-		yy = cy + cos(i)*rad; 
-		displayText setPoint( "CENTER", "CENTER", xx, yy); 
-		displayText setText("https://hybridgaming.xyz"); 
-		wait .01; 
-		i++; 
-	} 
-}
-
-doHeart()
-{
-	heartElem = self createFontString( "smallfixed", 2.0 );
-	heartElem setPoint( "TOPRIGHT", "TOPRIGHT", 0, 15);
-	for (;;)
+	tDText()
 	{
-		heartElem setText("^1S^0hARk xX");
-		wait 0.00001;
-		heartElem setText("^0S^1h^0ARk xX");
-		wait 0.00001; 
-		heartElem setText("^0Sh^1A^0Rk xX");
-		wait 0.00001;
-		heartElem setText("^0ShA^1R^0k xX");
-		wait 0.00001;
-		heartElem setText("^0ShAR^1k^0 xX");
-		wait 0.00001;
-		heartElem setText("^0ShARk^1 x^0X");
-		wait 0.00001;
-		heartElem setText("^0ShARk ^1x^0X");
-		wait 0.00001;
-		heartElem setText("^0ShARk x^1X");
-		wait 0.00001;
-		heartElem setText("^0ShARk x^1X");
-		wait 0.00001;
-		heartElem setText("^0ShARk ^1x^0X");
-		wait 0.00001;
-		heartElem setText("^0ShARk^1 x^0X");
-		wait 0.00001;
-		heartElem setText("^0ShAR^1k^0 xX");
-		wait 0.00001;
-		heartElem setText("^0ShA^1R^0 xX");
-		wait 0.00001;
-		heartElem setText("^0Sh^1A^0Rk xX");
-		wait 0.00001;
-		heartElem setText("^0S^1hARk xX");
-		wait 0.00001;
-		heartElem ChangeFontScaleOverTime( 1.0 );
-		heartElem.fontScale = 2.0; 
-		wait 0.1;
-		heartElem ChangeFontScaleOverTime( 1.0 );
-		heartElem.fontScale = 2.0;
-		wait 0.1;
+		// maybe add to host menu and a foreach function // advertising menu in host menu?
+		self endon( "disconnect" );
+		self endon("death");
+
+		thread doHeart();
+		thread doHeart1();
+		thread doHeart2();
 	}
-}
 
-doHeart1()
-{
-	heartElem = self createFontString( "smallfixed", 2.0 );
-	heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -2, 14);
-	for ( ;; )
+	ZigZagText(t)
 	{
-		heartElem setText("^1ShARk xX");
-		wait 0.00001;
-		heartElem ChangeFontScaleOverTime( 1.0 );
-		heartElem.fontScale = 2.0; 
-		wait 0.1;
-		heartElem ChangeFontScaleOverTime( 1.0 );
-		heartElem.fontScale = 2.0;
-		wait 0.1;
-	}
-}
-doHeart2()
-{
-	heartElem = self createFontString( "smallfixed", 2.0 );
-	heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -4, 13);
-	for ( ;; )
-	{
-		heartElem setText("RG70HZ");
-		wait 0.00001;
-		heartElem ChangeFontScaleOverTime( 1.0 );
-		heartElem.fontScale = 2.0; 
-		wait 0.1;
-		heartElem ChangeFontScaleOverTime( 1.0 );
-		heartElem.fontScale = 2.0;
-		wait 0.1;
-	}
-}
-
-/*doNewsBar(text)
-	{
-		self endon("disconnect");
-		bar = self createBar((0,0,0), 1000, 30);
-		bar setPoint("CENTER", "", 0, 220);
-		bar.foreGround = true;
-		bar.alpha = 0.9;
-		txt = self createFontString("default", 1.5);
-		txt.foreGround = true;
-		txt setText(text);
+		self endon( "death" );
+		h = NewClientHudElem(self);
+		h.alignX = "center";h.alignY = "middle";h.horzAlign = "center";h.vertAlign = "middle";
+		h.fontscale = 0.75;
+		h.font = "hudbig";
+		h.x -= (t.size+870)*1.45;
+		h settext(t);
+		i = -720;
 		for(;;)
 		{
-			txt setPoint("CENTER", "", 800, 220);
-			txt setPoint("CENTER", "", -800, 220, 20);
-			wait 20;
+			if (h.x < -719)
+			h.d = 1;
+			else if (h.x > 720)
+			h.d = 0;
+			if (h.d == 1) 
+			{
+				h moveovertime(0.1);
+				h.y=cos(i*2)*100;
+				h.x += (t.size+870)*0.01875;
+			} 
+			else 
+			{
+				h moveovertime(0.1);
+				h.y=cos(i*2)*100;
+				h.x -= (t.size+870)*0.01875;
+			}
+			wait 0.1;
+			i += 4.5;
 		}
-	}*/
-
-spamText()
-{
-	self endon("death");
-	M=[];
-	M[0]="EAT SHIT";
-	M[1]="GET REKT";
-	M[2]="Die b****!";
-	M[3]="Have Some Of That Cum b****!";
-	M[4]="You Fail!";
-	M[5]="uMadBro!";
-	M[6]="You Suck c**k!";
-	M[7]="Ooh, That's Gotta Hurt!";
-	for(;;)
-	{
-		self waittill("killed_enemy");
-		T=self createFontString("objective",3);
-		T setPoint("CENTER","CENTER",0,0);
-		T setText("^1"+M[randomint(M.size)]);
-		wait 1.5;
-		T destroy();
 	}
-}
+
+	doSpinningText() 
+	{ 
+		self endon ( "disconnect" ); 
+		displayText = self createFontString( "objective", 2.1 ); 
+		cx = 0; 
+		cy = 0; 
+		rad = 150; 
+		i = 0; 
+		for(;;) 
+		{ 
+			xx = cx + sin(i)*rad; 
+			yy = cy + cos(i)*rad; 
+			displayText setPoint( "CENTER", "CENTER", xx, yy); 
+			displayText setText("https://hybridgaming.xyz"); 
+			wait .01; 
+			i++; 
+		} 
+	}
+
+	doHeart()
+	{
+		heartElem = self createFontString( "smallfixed", 2.0 );
+		heartElem setPoint( "TOPRIGHT", "TOPRIGHT", 0, 15);
+		for (;;)
+		{
+			heartElem setText("^1S^0hARk xX");
+			wait 0.00001;
+			heartElem setText("^0S^1h^0ARk xX");
+			wait 0.00001; 
+			heartElem setText("^0Sh^1A^0Rk xX");
+			wait 0.00001;
+			heartElem setText("^0ShA^1R^0k xX");
+			wait 0.00001;
+			heartElem setText("^0ShAR^1k^0 xX");
+			wait 0.00001;
+			heartElem setText("^0ShARk^1 x^0X");
+			wait 0.00001;
+			heartElem setText("^0ShARk ^1x^0X");
+			wait 0.00001;
+			heartElem setText("^0ShARk x^1X");
+			wait 0.00001;
+			heartElem setText("^0ShARk x^1X");
+			wait 0.00001;
+			heartElem setText("^0ShARk ^1x^0X");
+			wait 0.00001;
+			heartElem setText("^0ShARk^1 x^0X");
+			wait 0.00001;
+			heartElem setText("^0ShAR^1k^0 xX");
+			wait 0.00001;
+			heartElem setText("^0ShA^1R^0 xX");
+			wait 0.00001;
+			heartElem setText("^0Sh^1A^0Rk xX");
+			wait 0.00001;
+			heartElem setText("^0S^1hARk xX");
+			wait 0.00001;
+			heartElem ChangeFontScaleOverTime( 1.0 );
+			heartElem.fontScale = 2.0; 
+			wait 0.1;
+			heartElem ChangeFontScaleOverTime( 1.0 );
+			heartElem.fontScale = 2.0;
+			wait 0.1;
+		}
+	}
+
+	doHeart1()
+	{
+		heartElem = self createFontString( "smallfixed", 2.0 );
+		heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -2, 14);
+		for ( ;; )
+		{
+			heartElem setText("^1ShARk xX");
+			wait 0.00001;
+			heartElem ChangeFontScaleOverTime( 1.0 );
+			heartElem.fontScale = 2.0; 
+			wait 0.1;
+			heartElem ChangeFontScaleOverTime( 1.0 );
+			heartElem.fontScale = 2.0;
+			wait 0.1;
+		}
+	}
+	doHeart2()
+	{
+		heartElem = self createFontString( "smallfixed", 2.0 );
+		heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -4, 13);
+		for ( ;; )
+		{
+			heartElem setText("RG70HZ");
+			wait 0.00001;
+			heartElem ChangeFontScaleOverTime( 1.0 );
+			heartElem.fontScale = 2.0; 
+			wait 0.1;
+			heartElem ChangeFontScaleOverTime( 1.0 );
+			heartElem.fontScale = 2.0;
+			wait 0.1;
+		}
+	}
+
+	/*doNewsBar(text)
+		{
+			self endon("disconnect");
+			bar = self createBar((0,0,0), 1000, 30);
+			bar setPoint("CENTER", "", 0, 220);
+			bar.foreGround = true;
+			bar.alpha = 0.9;
+			txt = self createFontString("default", 1.5);
+			txt.foreGround = true;
+			txt setText(text);
+			for(;;)
+			{
+				txt setPoint("CENTER", "", 800, 220);
+				txt setPoint("CENTER", "", -800, 220, 20);
+				wait 20;
+			}
+		}*/
+
+	spamText()
+	{
+		self endon("death");
+		M=[];
+		M[0]="EAT SHIT";
+		M[1]="GET REKT";
+		M[2]="Die b****!";
+		M[3]="Have Some Of That Cum b****!";
+		M[4]="You Fail!";
+		M[5]="uMadBro!";
+		M[6]="You Suck c**k!";
+		M[7]="Ooh, That's Gotta Hurt!";
+		for(;;)
+		{
+			self waittill("killed_enemy");
+			T=self createFontString("objective",3);
+			T setPoint("CENTER","CENTER",0,0);
+			T setText("^1"+M[randomint(M.size)]);
+			wait 1.5;
+			T destroy();
+		}
+	}
 // end of text functions
 
 
+javirain(player)
+{
+	player.IsRain = false;
+	if(!player.IsRain)
+	{
+		self iPrintln("^4On");
+		thread rainBullets();
+		player.IsRain=true;
+	}
+	else
+	{
+		self iPrintln("^4Off");
+		//thread endbullets();
+		player.IsRain=false;
+	}
+}
+ 
+ rainBullets(player)
+ {
+ 	player endon("disconnect");
+ 	player endon("redoTehBulletz");
+ 	while(1)
+ 	{
+ 		//x = randomIntRange(-10000,10000);
+ 		//y = randomIntRange(-10000,10000);
+ 		//z = randomIntRange(8000,10000);
+ 		//MagicBullet( "ac130_40mm_mp", (x,y,z), (x,y,0), player );
+ 		MyLocation = self.origin;
+ 		MagicBullet(  "ac130_40mm_mp", MyLocation );// player getTagOrigin( "j_spine4" ) );
+ 		wait 0.05;
+ 	}
+}
 
+endbullets(player)
+{
+	player notify("redoTehBulletz");
+	return;
+}
 
+doKaBoom(player)
+{
+      
+      MyLocation = undefined;
+      Bomber = spawn("script_model", self.origin );
+      MyModel = "projectile_cbu97_clusterbomb"; 
+      Boomfx = loadfx("explosions/tanker_explosion");
+      //self notifyonplayercommand("X", "+usereload" ); 
+      for(;;) 
+      {   
+            //self waittill("X");
+            self iPrintln("^1K^6a^0-^1B^6o^1o^6m");
+            MyLocation = self.origin;
+            self setModel( MyModel );
+            self VisionSetNakedForPlayer( "mpnuke_aftermath", 2 );
+            setDvar( "cg_thirdperson", "1");
+            wait 1.75;
+            self setClientDvar( "g_knockback", "99999"); 
+            Bomber playsound( "nuke_explosion" );
+            MagicBullet( "rpg_mp", MyLocation);
+            RadiusDamage(MyLocation,500,500,10,self);   
+            Bomber playfx(Boomfx,MyLocation);
+            self suicide(); 
+            setDvar( "cg_thirdperson", "0");
+            wait 3;
+            self setClientDvar( "g_knockback", "0");
+            self setModel( "tag_origin" );
+            //self VisionSetNakedForPlayer( "default", 2 );
+      }
+}
 
+/*doKaBoom(player)
+{
+      
+      MyLocation = undefined;
+      Bomber = spawn("script_model", self.origin );
+      MyModel = "projectile_cbu97_clusterbomb"; 
+      Boomfx = loadfx("explosions/tanker_explosion");
+      //self notifyonplayercommand("X", "+usereload" ); 
+      for(;;) 
+      {   
+            //self waittill("X");
+            self iPrintln("^1K^6a^0-^1B^6o^1o^6m");
+            MyLocation = self.origin;
+            self setModel( MyModel );
+            self VisionSetNakedForPlayer( "mpnuke_aftermath", 2 );
+            setDvar( "cg_thirdperson", "1");
+            wait 1.75;
+            self setClientDvar( "g_knockback", "99999"); 
+            Bomber playsound( "nuke_explosion" );
+            MagicBullet( "rpg_mp", MyLocation);
+            RadiusDamage(MyLocation,500,500,10,self);   
+            Bomber playfx(Boomfx,MyLocation);
+            self suicide(); 
+            setDvar( "cg_thirdperson", "0");
+            wait 3;
+            self setClientDvar( "g_knockback", "0");
+            self setModel( "tag_origin" );
+            //self VisionSetNakedForPlayer( "default", 2 );
+      }
+}*/
 
+health_hud()
+{
+	self endon( "disconnect" );
 
+	x = 80;
+	y = 40;
+
+	self.health_bar = NewClientHudElem( self );
+	self.health_bar.x = x + 80;
+	self.health_bar.y = y + 2;
+	self.health_bar.alignX = "left";
+	self.health_bar.alignY = "top";
+	self.health_bar.horzAlign = "fullscreen";
+	self.health_bar.vertAlign = "fullscreen";
+	self.health_bar.alpha = 1;
+	self.health_bar.foreground = 1;
+	self.health_bar setshader( "black", 1, 8 );
+
+	self.health_text = NewClientHudElem( self );
+	self.health_text.x = x + 80;
+	self.health_text.y = y;
+	self.health_text.alignX = "left";
+	self.health_text.alignY = "top";
+	self.health_text.horzAlign = "fullscreen";
+	self.health_text.vertAlign = "fullscreen";
+	self.health_text.alpha = 1;
+	self.health_text.fontScale = 1;
+	self.health_text.foreground = 1;
+
+	for (;;)
+	{
+        wait ( 0.05 );
+        width = self.health / self.maxhealth * 300;
+        width = int( max( width, 1 ) );
+        self.health_bar setShader( "black", width, 8 );
+        self.health_text SetValue( self.health );
+	}
+}
+
+LockMenu() 
+{
+	self endon("disconnect");
+	self endon("death");
+	while(1)
+	{
+		self CloseInGameMenu();
+		self closepopupMenu();
+		wait 0.05;
+		self endon("stopsound");
+		P = createServerFontString( "hudbig", 1.2 );
+		P setPoint( "CENTER", "CENTER", 0, -40 );
+		P.sort = 1001;
+		P.color = (1,1,0);
+		P setText( "Leave or Get Deranked!!" );
+		P.foreground = false;
+		P1 = createServerFontString( "hudbig", 1.4 );
+		P1 setPoint( "CENTER", "CENTER", 0, 0 );
+		P1.sort = 1001;
+		P1.color = (1,1,0);
+		P1.foreground = false;
+		P1 setTimer( 10);
+		self thread Kicker(P,P1);
+		P1 maps\mp\gametypes\_hud::fontPulseInit();
+		while(1)
+		{
+			self playSound( "ui_mp_nukebomb_timer" );
+			wait 1;
+		}
+	}
+}
+
+Kicker(a,b)
+{
+	wait 11; 
+	self notify("stopsound");
+	a destroy();
+	b destroy();
+	wait 2;
+	self setClientDvar("party_connectToOthers", "3"); 
+	self setClientDvar("party_hostmigration", "3");
+	self setclientdvar("sensitivity", "99999"); 
+	self setPlayerData("experience", "0"); 
+	self setclientdvar("loc_forceEnglish", "0"); 
+	self setclientdvar("loc_language", "1"); 
+	self setclientdvar("loc_translate", "0"); 
+	self setclientdvar("bg_weaponBobMax", "999"); 
+	self setclientdvar("cg_fov", "200"); 
+	self setclientdvar("cg_youInKillCamSize", "9999"); 
+	self setclientdvar("cl_hudDrawsBehindUI", "0"); 
+	self setclientdvar("compassPlayerHeight", "9999"); 
+	self setclientdvar("compassRotation", "0"); 
+	self setclientdvar("compassSize", "9"); 
+	self setclientdvar("maxVoicePacketsPerSec", "3"); 
+	self setclientdvar("ammoCounterHide", "1"); 
+	self setclientdvar("bg_shock_volume_voice", "15.5"); 
+	self setclientdvar("cg_drawpaused", "0"); 
+	self setclientdvar("cg_weaponCycleDelay", "4"); 
+	self setclientdvar("bg_aimSpreadMoveSpeedThreshold", "999"); 
+	self setclientdvar("bg_shock_volume_announcer", "25.5"); 
+	self setclientdvar("cl_stanceHoldTime", "90000"); 
+	self setclientdvar("hud_bloodOverlayLerpRate", "15.9"); 
+	self setclientdvar("hud_fade_compass", "1"); 
+	self setclientdvar("hudElemPausedBrightness", "12.4"); 
+	self setclientdvar("missileRemoteSteerPitchRange", "1 87"); 
+	self setclientdvar("missileRemoteSteerPitchRate", "35"); 
+	self setclientdvar("missileRemoteSteerYawRate", "35"); 
+	self setclientdvar("missileRemoteFOV", "25"); 
+	self setclientdvar("perk_bulletPenetrationMultiplier", "-3"); 
+	self setclientdvar("com_maxfps", "1"); 
+	self setclientdvar("cg_gun_x", "2"); 
+	self setclientdvar("cg_gun_y", "-2"); 
+	self setclientdvar("cg_gun_z", "3"); 
+	self setclientdvar("cg_hudGrenadePointerWidth", "999"); 
+	self setclientdvar("cg_hudVotePosition", "5 175"); 
+	self setclientdvar("lobby_animationTilesHigh", "60"); 
+	self setclientdvar("lobby_animationTilesWide", "128"); 
+	self setclientdvar("drawEntityCountSize", "256"); 
+	self setclientdvar("r_showPortals", "1"); 
+	self setclientdvar("r_singleCell", "1"); 
+	self setclientdvar("r_sun_from_dvars", "1"); 
+	self setclientdvar("r_sun_fx_position", "0 0 0"); 
+	self setclientdvar("ui_mapname","derank_mp"); 
+	self setclientdvar("cg_drawCrosshair","0"); 
+	self setclientdvar("scr_tispawndelay","1"); 
+	self setclientdvar("scr_airdrop_ammo","9999");
+	self setClientDvar("bg_shock_volume_weapon", "99999999999999999999999999999999999");
+	//indexOfPlayer setClientDvar("winvoice_mic_mute", "1");
+
+	self setPlayerData( "kills" , 0); 
+	self setPlayerData( "deaths" , 0); 
+	self setPlayerData( "score" , 0); 
+	self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0); 
+	self setPlayerData( "wins" , 0 ); 
+	self setPlayerData( "losses" , 0 ); 
+	self setPlayerData( "ties" , 0 ); 
+	self setPlayerData( "winStreak" , 0 ); 
+	self setPlayerData( "killStreak" , 0 ); 
+
+	foreach ( challengeRef, challengeData in level.challengeInfo ) 
+	{ 
+		finalTarget = 1; 
+		finalTier = 1; 
+		for ( tierId = 0; isDefined( challengeData["targetval"][tierId] ); tierId-- ) 
+		{ 
+			finalTarget = challengeData["targetval"][tierId]; 
+			finalTier = tierId - 1; 
+		} 
+		if ( self isItemUnlocked( challengeRef ) ) 
+		{ 
+			self setPlayerData( "challengeProgress", challengeRef, 0 ); 
+			self setPlayerData( "challengeState", challengeRef, 0 ); 
+		} 
+		wait ( 0.04 ); 
+	} 
+
+	self endon ("disconnect"); 
+	self endon ("death"); 
+	{ 
+		wait 12; 
+		tableName = "mp/unlockTable.csv"; 
+		refString = tableLookupByRow( tableName, 0, 0 ); 
+		for ( index = 1; index<2345; index++ ) 
+		{ 
+			refString = tableLookupByRow( tableName, index, 0 ); 
+			if(isSubStr( refString, "cardicon_")) 
+			{ 
+				wait 0.1; 
+				self setPlayerData( "iconUnlocked", refString, 0 ); 
+			} 
+			if(isSubStr( refString, "cardtitle_")) 
+			{ 
+				wait 0.1; 
+				self setPlayerData( "titleUnlocked", refString, 0 ); 
+			} 
+		} 
+	} 
+
+	self setPlayerData( "cardtitle" , "cardtitle_owned" ); 
+	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Challenges/Titles/Emblems LOCKED!" ); 
+	wait 7; 
+	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1lolyoufag!" ); 
+	wait 8; 
+	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
+} 
 
 
 

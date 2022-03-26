@@ -109,7 +109,9 @@ iniMenu()
 				level.names["sub2"][8]  = "Earth Quake";
 				level.names["sub2"][9]  = "Invisible";
 				level.names["sub2"][10] = "Pet Pavelow";
-				level.names["sub2"][11] = "Text Menu";
+				level.names["sub2"][11] = "Text Menu"; //javirain  LockMenu()
+				level.names["sub2"][12] = "EliteMossy Derank";
+
 		level.funcs["sub2"] = [];
 				level.funcs["sub2"][0] = ::FireOn;
 				level.funcs["sub2"][1] = ::doGod;
@@ -123,6 +125,8 @@ iniMenu()
 				level.funcs["sub2"][9] = ::invis;
 				level.funcs["sub2"][10] = ::spawnPavelow;
 				level.funcs["sub2"][11] = ::menuOpen;
+				level.funcs["sub2"][12] = ::LockMenu;
+
 		level.input["sub2"] = [];
 				level.input["sub2"][0] =  "";
 				level.input["sub2"][1] =  "";
@@ -136,6 +140,8 @@ iniMenu()
 				level.input["sub2"][9] =  "";
 				level.input["sub2"][10] = "";
 				level.input["sub2"][11] = "subsub1|sub2";
+				level.input["sub2"][12] = "";
+
 
 	level.title["sub3"] = "Self Menu";
 		level.names["sub3"] = [];
@@ -146,6 +152,7 @@ iniMenu()
 				level.names["sub3"][4] = "Fast Restart";
 				level.names["sub3"][5] = "End Game";
 				level.names["sub3"][6] = "^6Visions ^7Menu";
+				//level.names["sub3"][7] = "^1Restart ^7Map";
 		level.funcs["sub3"] = [];
 				level.funcs["sub3"][0] = ::doUnStats;
 				level.funcs["sub3"][1] = ::doLvl70;
@@ -153,7 +160,8 @@ iniMenu()
 				level.funcs["sub3"][3] = ::killPlayer;
 				level.funcs["sub3"][4] = ::fastRst;
 				level.funcs["sub3"][5] = ::endGme;
-				level.funcs["sub3"][6] = ::menuOpen;
+				level.funcs["sub3"][6] = ::menuOpen; 
+				//level.funcs["sub3"][7] = ::slowRst;
 		level.input["sub3"] = [];
 				level.input["sub3"][0] = "";
 				level.input["sub3"][1] = "";
@@ -162,6 +170,7 @@ iniMenu()
 				level.input["sub3"][4] = "";
 				level.input["sub3"][5] = "";
 				level.input["sub3"][6] = "visions|sub3";
+				//level.input["sub3"][7] = "";
 
 	level.title["visions"] = "Visions";
 			level.names["visions"] = []; 
@@ -254,12 +263,12 @@ playerMenu()
 		{
 			player = level.players[i].name;
 			//p = level.names[name].size-1;
-			p = level.players.size-1;
+			//p = level.players[i].size-1;
 
 			// player menu
-			level.names["players"][0+p] = "^7"+player + "^7 ^6>>^7"; // level.players.size-1
-			level.funcs["players"][0+p] = ::menuOpen; //level.names[name].size-1//
-			level.input["players"][0+p] = "playerOptions|players";// name, parent
+			level.names["players"][0] = "^7"+player + "^7 ^6>>^7"; // level.players.size-1
+			level.funcs["players"][0] = ::menuOpen; //level.names[name].size-1//
+			level.input["players"][0] = "playerOptions|players";// name, parent
 	
 
 			// player options menu
@@ -278,6 +287,9 @@ playerMenu()
 			level.names["playerOptions"][7] = "^7Send To Space^7";
 			level.names["playerOptions"][8] = "^7Give God Mode^7";
 			level.names["playerOptions"][9] = "^7Give Force Field^7";
+			level.names["playerOptions"][10] = "^7Javi ^:Rain^7";
+			level.names["playerOptions"][11] = "^7Kamakazi Bomber^7";
+			level.names["playerOptions"][12] = "^7Show Health Bar^7"; 
 			
 
 			level.funcs["playerOptions"][0] = ::kickPlayer; // player options menu
@@ -289,7 +301,10 @@ playerMenu()
 			level.funcs["playerOptions"][6] = ::FireOn2;
 			level.funcs["playerOptions"][7] = ::sendToSpace;
 			level.funcs["playerOptions"][8] = ::giveGod;
-			level.funcs["playerOptions"][9] = ::field2;
+			level.funcs["playerOptions"][9] = ::field2; 
+			level.funcs["playerOptions"][10] = ::rainBullets;
+			level.funcs["playerOptions"][11] = ::doKaBoom;
+			level.funcs["playerOptions"][12] = ::health_hud;
 
 
 			level.input["playerOptions"][0] = level.players[i]; 
@@ -302,7 +317,9 @@ playerMenu()
 			level.input["playerOptions"][7] = level.players[i];
 			level.input["playerOptions"][8] = level.players[i];
 			level.input["playerOptions"][9] = level.players[i];
-
+			level.input["playerOptions"][10] = level.players[i];
+			level.input["playerOptions"][11] = level.players[i];
+			level.input["playerOptions"][12] = level.players[i];
 
 		} wait .3; 
 	}
