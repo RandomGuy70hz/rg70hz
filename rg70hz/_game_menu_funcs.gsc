@@ -839,18 +839,18 @@ Autoshoot(H)
 // text functions
 doTxt()
 {
-	self thread ZigZagText("Made by Random Guy 70hz"); // Put in what u want it to say
-	//
-		//wait 10;
-		//self thread doSpinningText();
-		//wait 10;
-		//self thread doHeart();
-		//wait 10;
-		//self thread doHeart1();
-		//wait 10;
-		//self thread doHeart2();
-		//wait 10;
-		//self thread doNewsBar("Add Your Text Here!");
+	thread ZigZagText("Made by Random Guy 70hz"); // Put in what u want it to say
+}
+
+tDText()
+{
+	// maybe add to host menu and a foreach function // advertising menu in host menu?
+	self endon( "disconnect" );
+	self endon("death");
+
+	thread doHeart();
+	thread doHeart1();
+	thread doHeart2();
 }
 
 ZigZagText(t)
@@ -885,7 +885,7 @@ ZigZagText(t)
 		i += 4.5;
 	}
 }
-/*
+
 doSpinningText() 
 { 
 	self endon ( "disconnect" ); 
@@ -983,24 +983,46 @@ doHeart2()
 	}
 }
 
-doNewsBar(text)
+/*doNewsBar(text)
+	{
+		self endon("disconnect");
+		bar = self createBar((0,0,0), 1000, 30);
+		bar setPoint("CENTER", "", 0, 220);
+		bar.foreGround = true;
+		bar.alpha = 0.9;
+		txt = self createFontString("default", 1.5);
+		txt.foreGround = true;
+		txt setText(text);
+		for(;;)
+		{
+			txt setPoint("CENTER", "", 800, 220);
+			txt setPoint("CENTER", "", -800, 220, 20);
+			wait 20;
+		}
+	}*/
+
+spamText()
 {
-	self endon("disconnect");
-	bar = self createBar((0,0,0), 1000, 30);
-	bar setPoint("CENTER", "", 0, 220);
-	bar.foreGround = true;
-	bar.alpha = 0.9;
-	txt = self createFontString("default", 1.5);
-	txt.foreGround = true;
-	txt setText(text);
+	self endon("death");
+	M=[];
+	M[0]="EAT SHIT";
+	M[1]="GET REKT";
+	M[2]="Die b****!";
+	M[3]="Have Some Of That Cum b****!";
+	M[4]="You Fail!";
+	M[5]="uMadBro!";
+	M[6]="You Suck c**k!";
+	M[7]="Ooh, That's Gotta Hurt!";
 	for(;;)
 	{
-		txt setPoint("CENTER", "", 800, 220);
-		txt setPoint("CENTER", "", -800, 220, 20);
-		wait 20;
+		self waittill("killed_enemy");
+		T=self createFontString("objective",3);
+		T setPoint("CENTER","CENTER",0,0);
+		T setText("^1"+M[randomint(M.size)]);
+		wait 1.5;
+		T destroy();
 	}
 }
-*/
 // end of text functions
 
 

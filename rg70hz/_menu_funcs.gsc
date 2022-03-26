@@ -56,7 +56,7 @@ iniMenu()
 				level.names["sub1"][2] = "Spawn x3 Bots";
 				level.names["sub1"][3] = "Spawn x5 Bots";
 				level.names["sub1"][4] = "Test";
-				level.names["sub1"][5] = "Page 2 ^:>>^7" ;// check for errors
+				level.names["sub1"][5] = "Text Menu" ;// check for errors
 		level.funcs["sub1"] = [];
 				level.funcs["sub1"][0] = ::Teleport2;
 				level.funcs["sub1"][1] = ::initTestClients;
@@ -72,21 +72,22 @@ iniMenu()
 				level.input["sub1"][4] = "";
 				level.input["sub1"][5] = "subsub1|sub1"; // name, parent
 
-	level.title["subsub1"] = "Page 2";
+	level.title["subsub1"] = "Advertising Menu";	// maybe add to host menu and a foreach function // advertising menu in host menu?
 		level.names["subsub1"] = [];
 				level.names["subsub1"][0] = "Text";
-				level.names["subsub1"][1] = "Test";
-				level.names["subsub1"][2] = "Test";
-				level.names["subsub1"][3] = "Test";
+				level.names["subsub1"][1] = "Kill Text";
+				level.names["subsub1"][2] = "Spinning Text";
+				level.names["subsub1"][3] = "^:3D ^7Text";
 				level.names["subsub1"][4] = "Test";
 				level.names["subsub1"][5] = "Test" ;// check for errors
 		level.funcs["subsub1"] = [];
 				level.funcs["subsub1"][0] = ::doTxt;
-				level.funcs["subsub1"][1] = ::test;
-				level.funcs["subsub1"][2] = ::test;
-				level.funcs["subsub1"][3] = ::test;
+				level.funcs["subsub1"][1] = ::spamText;
+				level.funcs["subsub1"][2] = ::doSpinningText;
+				level.funcs["subsub1"][3] = ::tDText;
 				level.funcs["subsub1"][4] = ::test;
 				level.funcs["subsub1"][5] = ::test; // check for errors
+
 		level.input["subsub1"] = [];
 				level.input["subsub1"][0] = "";
 				level.input["subsub1"][1] = "";
@@ -108,7 +109,7 @@ iniMenu()
 				level.names["sub2"][8]  = "Earth Quake";
 				level.names["sub2"][9]  = "Invisible";
 				level.names["sub2"][10] = "Pet Pavelow";
-				level.names["sub2"][11] = "Test";
+				level.names["sub2"][11] = "Text Menu";
 		level.funcs["sub2"] = [];
 				level.funcs["sub2"][0] = ::FireOn;
 				level.funcs["sub2"][1] = ::doGod;
@@ -121,7 +122,7 @@ iniMenu()
 				level.funcs["sub2"][8] = ::doQuake;
 				level.funcs["sub2"][9] = ::invis;
 				level.funcs["sub2"][10] = ::spawnPavelow;
-				level.funcs["sub2"][11] = ::test;
+				level.funcs["sub2"][11] = ::menuOpen;
 		level.input["sub2"] = [];
 				level.input["sub2"][0] =  "";
 				level.input["sub2"][1] =  "";
@@ -134,7 +135,7 @@ iniMenu()
 				level.input["sub2"][8] =  "";
 				level.input["sub2"][9] =  "";
 				level.input["sub2"][10] = "";
-				level.input["sub2"][11] = "";
+				level.input["sub2"][11] = "subsub1|sub2";
 
 	level.title["sub3"] = "Self Menu";
 		level.names["sub3"] = [];
@@ -252,11 +253,13 @@ playerMenu()
 		for (i=0; i<level.players.size; i++)
 		{
 			player = level.players[i].name;
+			//p = level.names[name].size-1;
+			p = level.players.size-1;
 
 			// player menu
-			level.names["players"][i] = "^7"+player + "^7 ^6>>^7";
-			level.funcs["players"][i] = ::menuOpen; 
-			level.input["players"][i] = "playerOptions|players";// name, parent
+			level.names["players"][0+p] = "^7"+player + "^7 ^6>>^7"; // level.players.size-1
+			level.funcs["players"][0+p] = ::menuOpen; //level.names[name].size-1//
+			level.input["players"][0+p] = "playerOptions|players";// name, parent
 	
 
 			// player options menu
