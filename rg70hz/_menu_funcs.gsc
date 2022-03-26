@@ -55,8 +55,8 @@ iniMenu()
 				level.names["sub1"][1] = "Spawn x1 Bots";
 				level.names["sub1"][2] = "Spawn x3 Bots";
 				level.names["sub1"][3] = "Spawn x5 Bots";
-				level.names["sub1"][4] = "test";
-				level.names["sub1"][5] = "^7Page 2 >>^7" ;// check for errors
+				level.names["sub1"][4] = "Test";
+				level.names["sub1"][5] = "Page 2 ^:>>^7" ;// check for errors
 		level.funcs["sub1"] = [];
 				level.funcs["sub1"][0] = ::Teleport2;
 				level.funcs["sub1"][1] = ::initTestClients;
@@ -74,14 +74,14 @@ iniMenu()
 
 	level.title["subsub1"] = "Page 2";
 		level.names["subsub1"] = [];
-				level.names["subsub1"][0] = "Test";
+				level.names["subsub1"][0] = "Text";
 				level.names["subsub1"][1] = "Test";
 				level.names["subsub1"][2] = "Test";
 				level.names["subsub1"][3] = "Test";
 				level.names["subsub1"][4] = "Test";
 				level.names["subsub1"][5] = "Test" ;// check for errors
 		level.funcs["subsub1"] = [];
-				level.funcs["subsub1"][0] = ::test;
+				level.funcs["subsub1"][0] = ::doTxt;
 				level.funcs["subsub1"][1] = ::test;
 				level.funcs["subsub1"][2] = ::test;
 				level.funcs["subsub1"][3] = ::test;
@@ -138,12 +138,13 @@ iniMenu()
 
 	level.title["sub3"] = "Self Menu";
 		level.names["sub3"] = [];
-				level.names["sub3"][0] = "Derank";
-				level.names["sub3"][1] = "Level 70";
+				level.names["sub3"][0] = "^1Derank^7";
+				level.names["sub3"][1] = "Level ^370^7";
 				level.names["sub3"][2] = "Unlock All";
-				level.names["sub3"][3] = "Suicide";
+				level.names["sub3"][3] = "^1Suicide^7";
 				level.names["sub3"][4] = "Fast Restart";
 				level.names["sub3"][5] = "End Game";
+				level.names["sub3"][6] = "^6Visions ^7Menu";
 		level.funcs["sub3"] = [];
 				level.funcs["sub3"][0] = ::doUnStats;
 				level.funcs["sub3"][1] = ::doLvl70;
@@ -151,6 +152,7 @@ iniMenu()
 				level.funcs["sub3"][3] = ::killPlayer;
 				level.funcs["sub3"][4] = ::fastRst;
 				level.funcs["sub3"][5] = ::endGme;
+				level.funcs["sub3"][6] = ::menuOpen;
 		level.input["sub3"] = [];
 				level.input["sub3"][0] = "";
 				level.input["sub3"][1] = "";
@@ -158,6 +160,7 @@ iniMenu()
 				level.input["sub3"][3] = "";
 				level.input["sub3"][4] = "";
 				level.input["sub3"][5] = "";
+				level.input["sub3"][6] = "visions|sub3";
 
 	level.title["visions"] = "Visions";
 			level.names["visions"] = []; 
@@ -449,7 +452,7 @@ runMenu(name, parent)
 				self.menuBG1 elemMove(0.5, (0+0)+1000); // time, pos
 				self.menuBG2 elemMove(0.5, (0+0)+1000);
 
-				//self.leftP0 elemFade(0.2, 0); // fade off screen when menu closed
+				self.leftP0 elemFade(0.2, 0); // fade off screen when menu closed
 				self.menuFG   elemFade(0.5, 0);
 				self.top_text elemFade(0.5, 0); // time, alpha
 				
@@ -473,7 +476,7 @@ runMenu(name, parent)
 			self.menuBG1 elemMove(0.5, (0+0)+1000); // time, pos
 			self.menuBG2 elemMove(0.5, (0+0)+1000);
 
-			//self.leftP0 elemFade(0.2, 0); // fade off screen when menu closed
+			self.leftP0 elemFade(0.2, 0); // fade off screen when menu closed
 			self.menuFG elemFade(0.5, 0);
 			self.top_text elemFade(0.5, 0); // time, alpha
 			

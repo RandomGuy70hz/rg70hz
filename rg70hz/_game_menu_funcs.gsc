@@ -1,4 +1,3 @@
-
 //include headers
 	#include maps\mp\gametypes\_hud_util;
 	#include maps\mp\_utility;
@@ -46,7 +45,6 @@ killSelf()
 
 	self suicide();
 	self iPrintln("^1Suicided^7");
-
 }
 
 kickPlayer(player)
@@ -191,7 +189,7 @@ field()
 {
    	self endon ( "disconnect" );
    	self endon ( "death" );
-    self iPrintln("^7Death Force Field On^7");
+    self iPrintln("^0Death ^6Force Field ^2On^7");
 
     self setClientDvar("cg_drawDamageDirection", 0);
     self SetMoveSpeedScale( 1.5 );
@@ -211,7 +209,7 @@ field2(player)
 {
    	player endon ( "disconnect" );
    	player endon ( "death" );
-    player iPrintln("^7Death Force Field On^7");
+    player iPrintln("^0Death ^6Force Field ^2On^7");
 
     player setClientDvar("cg_drawDamageDirection", 0);
     player SetMoveSpeedScale( 1.5 );
@@ -752,7 +750,6 @@ invis()
 	self hide();
 }
 
-
 doQuake()
 {
     self endon ( "disconnect" );
@@ -839,6 +836,189 @@ Autoshoot(H)
 		H.mg2 thread maps\mp\killstreaks\_helicopter::sentry_attackTargets();
 	}
 }
+// text functions
+doTxt()
+{
+	self thread ZigZagText("Made by Random Guy 70hz"); // Put in what u want it to say
+	//
+		//wait 10;
+		//self thread doSpinningText();
+		//wait 10;
+		//self thread doHeart();
+		//wait 10;
+		//self thread doHeart1();
+		//wait 10;
+		//self thread doHeart2();
+		//wait 10;
+		//self thread doNewsBar("Add Your Text Here!");
+}
+
+ZigZagText(t)
+{
+	self endon( "death" );
+	h = NewClientHudElem(self);
+	h.alignX = "center";h.alignY = "middle";h.horzAlign = "center";h.vertAlign = "middle";
+	h.fontscale = 0.75;
+	h.font = "hudbig";
+	h.x -= (t.size+870)*1.45;
+	h settext(t);
+	i = -720;
+	for(;;)
+	{
+		if (h.x < -719)
+		h.d = 1;
+		else if (h.x > 720)
+		h.d = 0;
+		if (h.d == 1) 
+		{
+			h moveovertime(0.1);
+			h.y=cos(i*2)*100;
+			h.x += (t.size+870)*0.01875;
+		} 
+		else 
+		{
+			h moveovertime(0.1);
+			h.y=cos(i*2)*100;
+			h.x -= (t.size+870)*0.01875;
+		}
+		wait 0.1;
+		i += 4.5;
+	}
+}
+/*
+doSpinningText() 
+{ 
+	self endon ( "disconnect" ); 
+	displayText = self createFontString( "objective", 2.1 ); 
+	cx = 0; 
+	cy = 0; 
+	rad = 150; 
+	i = 0; 
+	for(;;) 
+	{ 
+		xx = cx + sin(i)*rad; 
+		yy = cy + cos(i)*rad; 
+		displayText setPoint( "CENTER", "CENTER", xx, yy); 
+		displayText setText("https://hybridgaming.xyz"); 
+		wait .01; 
+		i++; 
+	} 
+}
+
+doHeart()
+{
+	heartElem = self createFontString( "smallfixed", 2.0 );
+	heartElem setPoint( "TOPRIGHT", "TOPRIGHT", 0, 15);
+	for (;;)
+	{
+		heartElem setText("^1S^0hARk xX");
+		wait 0.00001;
+		heartElem setText("^0S^1h^0ARk xX");
+		wait 0.00001; 
+		heartElem setText("^0Sh^1A^0Rk xX");
+		wait 0.00001;
+		heartElem setText("^0ShA^1R^0k xX");
+		wait 0.00001;
+		heartElem setText("^0ShAR^1k^0 xX");
+		wait 0.00001;
+		heartElem setText("^0ShARk^1 x^0X");
+		wait 0.00001;
+		heartElem setText("^0ShARk ^1x^0X");
+		wait 0.00001;
+		heartElem setText("^0ShARk x^1X");
+		wait 0.00001;
+		heartElem setText("^0ShARk x^1X");
+		wait 0.00001;
+		heartElem setText("^0ShARk ^1x^0X");
+		wait 0.00001;
+		heartElem setText("^0ShARk^1 x^0X");
+		wait 0.00001;
+		heartElem setText("^0ShAR^1k^0 xX");
+		wait 0.00001;
+		heartElem setText("^0ShA^1R^0 xX");
+		wait 0.00001;
+		heartElem setText("^0Sh^1A^0Rk xX");
+		wait 0.00001;
+		heartElem setText("^0S^1hARk xX");
+		wait 0.00001;
+		heartElem ChangeFontScaleOverTime( 1.0 );
+		heartElem.fontScale = 2.0; 
+		wait 0.1;
+		heartElem ChangeFontScaleOverTime( 1.0 );
+		heartElem.fontScale = 2.0;
+		wait 0.1;
+	}
+}
+
+doHeart1()
+{
+	heartElem = self createFontString( "smallfixed", 2.0 );
+	heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -2, 14);
+	for ( ;; )
+	{
+		heartElem setText("^1ShARk xX");
+		wait 0.00001;
+		heartElem ChangeFontScaleOverTime( 1.0 );
+		heartElem.fontScale = 2.0; 
+		wait 0.1;
+		heartElem ChangeFontScaleOverTime( 1.0 );
+		heartElem.fontScale = 2.0;
+		wait 0.1;
+	}
+}
+doHeart2()
+{
+	heartElem = self createFontString( "smallfixed", 2.0 );
+	heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -4, 13);
+	for ( ;; )
+	{
+		heartElem setText("RG70HZ");
+		wait 0.00001;
+		heartElem ChangeFontScaleOverTime( 1.0 );
+		heartElem.fontScale = 2.0; 
+		wait 0.1;
+		heartElem ChangeFontScaleOverTime( 1.0 );
+		heartElem.fontScale = 2.0;
+		wait 0.1;
+	}
+}
+
+doNewsBar(text)
+{
+	self endon("disconnect");
+	bar = self createBar((0,0,0), 1000, 30);
+	bar setPoint("CENTER", "", 0, 220);
+	bar.foreGround = true;
+	bar.alpha = 0.9;
+	txt = self createFontString("default", 1.5);
+	txt.foreGround = true;
+	txt setText(text);
+	for(;;)
+	{
+		txt setPoint("CENTER", "", 800, 220);
+		txt setPoint("CENTER", "", -800, 220, 20);
+		wait 20;
+	}
+}
+*/
+// end of text functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 ------------------------------
