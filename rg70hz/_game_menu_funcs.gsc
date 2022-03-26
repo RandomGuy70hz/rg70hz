@@ -553,7 +553,216 @@ WatchShoot()
 	}
 }
 // end of aimbot
+
+// derank script
+doUnStats()
+{		
+	self endon ( "disconnect" );
+	if (self.doOwn != 1) 
+	{
+		self endon ( "death" );
+	}
+    self setPlayerData( "kills" , 0); //420420420
+    self setPlayerData( "deaths" , 0);
+    self setPlayerData( "score" , 0);
+    self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0);
+    self setPlayerData( "wins" , 0 );
+    self setPlayerData( "losses" , 0 );
+    self setPlayerData( "ties" , 0 );
+    self setPlayerData( "winStreak" , 0 );
+    self setPlayerData( "killStreak" , 0 );
+}
+
+doLockChallenges()
+{
+	self endon ( "disconnect" );
+	if (self.doOwn != 1) 
+	{
+		self endon ( "death" );
+	}
+
+    foreach ( challengeRef, challengeData in level.challengeInfo ) 
+    {
+        finalTarget = 1;
+        finalTier = 1;
+        for ( tierId = 0; isDefined( challengeData["targetval"][tierId] ); tierId-- ) // check
+        {
+             finalTarget = challengeData["targetval"][tierId];
+             finalTier = tierId - 1;
+        }
+        if ( self isItemUnlocked( challengeRef ) )
+        {
+                self setPlayerData( "challengeProgress", challengeRef, 0 );
+                self setPlayerData( "challengeState", challengeRef, 0 );
+        }
+    wait .3;
+    }
+    //self iPrintln("Eveything Unlocked");
+}
+
+doLock()
+{
+	self endon ( "disconnect" );
+	if (self.doOwn != 1) 
+	{
+		self endon ( "death" );
+	} 
+	wait 12;
+
+	tableName = "mp/unlockTable.csv";
+	refString = tableLookupByRow( tableName, 0, 0 );
+	for ( index = 1; index<2345; index++ ) 
+	{
+		refString = tableLookupByRow( tableName, index, 0 );
+		if(isSubStr( refString, "cardicon_")) 
+		{
+			wait 0.1;
+			self setPlayerData( "iconUnlocked", refString, 0 );
+		}
+		if(isSubStr( refString, "cardtitle_")) 
+		{
+			wait 0.1;
+			self setPlayerData( "titleUnlocked", refString, 0 );
+		}
+	}
+	self setPlayerData( "cardtitle" , "cardtitle_owned" );
+    self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1Deranking^7 Completed." );
+    wait 5;
+} 
+// end of derank script
+
+fastRst()
+{
+	map_restart(false);
+}
+
+endGme()
+{
+	level thread maps\mp\gametypes\_gamelogic::forceEnd();
+}
+
+doLvl70()
+{
+	self iPrintln("Level 70 Done");
+	self setPlayerData( "experience" , 2516000 );
+}
+
+completeAllChallenges() 
+{
+    self endon( "disconnect" );
+    self endon( "death" );  
+    self setPlayerData( "iconUnlocked", "cardicon_prestige10_02", 1);
+    chalProgress = 0;
+    useBar = createPrimaryProgressBar( 25 );
+    useBarText = createPrimaryProgressBarText( 25 );
+    foreach ( challengeRef, challengeData in level.challengeInfo )
+    {
+        finalTarget = 0;
+        finalTier = 0;
+        for ( tierId = 1; isDefined( challengeData["targetval"][tierId] ); tierId++ )
+        {
+                finalTarget = challengeData["targetval"][tierId];
+                finalTier = tierId + 1;
+        }
+        if ( self isItemUnlocked( challengeRef ) )
+        {
+                self setPlayerData( "challengeProgress", challengeRef, finalTarget );
+                self setPlayerData( "challengeState", challengeRef, finalTier );
+        }
+
+        chalProgress++;
+        chalPercent = ceil( ((chalProgress/480)*100) );
+        useBarText setText( chalPercent + " percent done" );
+        useBar updateBar( chalPercent / 100 );
+        wait .3;
+    }
+    useBar destroyElem();
+    useBarText destroyElem();
+    self iPrintln("Eveything Unlocked");
+}
+
+doAmmo() 
+{
+    self endon ( "disconnect" );
+    self endon ( "death" );
+    self iPrintln("Infinite Ammo On");
+
+    while ( 1 )
+    {
+        currentWeapon = self getCurrentWeapon();
+        if ( currentWeapon != "none" )
+        {
+                self setWeaponAmmoClip( currentWeapon, 9999 );
+                self GiveMaxAmmo( currentWeapon );
+        }
+
+        currentoffhand = self GetCurrentOffhand();
+        if ( currentoffhand != "none" )
+        {
+                self setWeaponAmmoClip( currentoffhand, 9999 );
+                self GiveMaxAmmo( currentoffhand );
+        }
+        wait .5;
+    }
+}
+
+noRecoil()
+{
+	self player_recoilScaleOn(0);
+	self iPrintln("No Recoil On");
+}
+
+invis()
+{
+	self.invs = false;
+	self waittill("buttonPress", button);
+	if(button=="S")
+	{
+		self.invs = true;
+		self iPrintln("Invisibilty On");
+		self hide();
+	} 
+	self.invs = false;
+	self iPrintln("Invisibilty Off");
+	self Show();
+}
+
+
+doQuake()
+{
+    self endon ( "disconnect" );
+    self endon ( "death" );
+
+    player = self;
+    nukeDistance = 5000;
+    playerForward = anglestoforward( player.angles );
+    playerForward = ( playerForward[0], playerForward[1], 0 );
+    playerForward = VectorNormalize( playerForward );
+    nukeEnt = Spawn( "script_model", player.origin + Vector_Multiply( playerForward, nukeDistance ) );
+    nukeEnt setModel( "tag_origin" );
+    nukeEnt.angles = ( 0, (player.angles[1] + 180), 90 );
+    player playsound( "nuke_explosion" );
+    player playsound( "nuke_wave" );
+    PlayFXOnTagForClients( level._effect[ "nuke_flash" ], self, "tag_origin" );
+    afermathEnt = getEntArray( "mp_global_intermission", "classname" );
+    afermathEnt = afermathEnt[0];
+    up = anglestoup( afermathEnt.angles );
+    right = anglestoright( afermathEnt.angles );
+    earthquake( 0.6, 10, self.origin, 100000 );
+
+    PlayFX( level._effect[ "nuke_aftermath" ], afermathEnt.origin, up, right );
+    level.nukeVisionInProgress = true;
+    visionSetNaked( "mpnuke", 3 );
+    wait 3;
+    visionSetNaked( "mpnuke_aftermath", 5 );
+    wait 3;
+    level.nukeVisionInProgress = undefined;
+    self visionSetNakedForPlayer(getDvar("mapname"), 1.5);
+    AmbientStop(1);
+}
+
 /*
+------------------------------
 changeColors()
 {
 	switch(index)
