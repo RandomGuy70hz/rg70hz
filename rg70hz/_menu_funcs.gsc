@@ -1,3 +1,19 @@
+/*
+	To inlcude:
+		- Main menu
+		- Account Menu
+		- Fun Menu 
+		- Menu Settings
+		- Vip
+		- Admin
+		- Host
+		  - gametype
+		  - gamemode
+		 	 - zombies
+		 	 - rpg
+		  - Player Menu
+*/
+
 // include headers
 	#include maps\mp\gametypes\_hud_util;
 	#include maps\mp\_utility;
@@ -8,14 +24,16 @@
 	#include rg70hz\_game_menu_funcs;
 	#include rg70hz\_hud_util_funcs;
 	#include rg70hz\_hud_funcs;
+
+
 // menu functions
 iniMenu()
 {
 	level.title["main"] = "Main Menu";
 		level.names["main"] = [];
 				level.names["main"][0] = "Sub Menu 1";
-				level.names["main"][1] = "Sub Menu 2";
-				level.names["main"][2] = "Sub Menu 3";
+				level.names["main"][1] = "Fun Menu";
+				level.names["main"][2] = "Account Menu";
 				level.names["main"][3] = "Visions";
 				level.names["main"][4] = "Players"; // player menu
 		level.funcs["main"] = [];
@@ -38,7 +56,7 @@ iniMenu()
 				level.names["sub1"][2] = "Spawn x3 Bots";
 				level.names["sub1"][3] = "Spawn x5 Bots";
 				level.names["sub1"][4] = "test";
-				level.names["sub1"][5] = "Main Menu" ;// check for errors
+				level.names["sub1"][5] = "Sub Menu 1" ;// check for errors
 		level.funcs["sub1"] = [];
 				level.funcs["sub1"][0] = ::Teleport2;
 				level.funcs["sub1"][1] = ::initTestClients;
@@ -52,35 +70,58 @@ iniMenu()
 				level.input["sub1"][2] = 3;
 				level.input["sub1"][3] = 5;
 				level.input["sub1"][4] = "";
-				level.input["sub1"][5] = "main"; // check for errors
+				level.input["sub1"][5] = "subsub1|sub1"; // name, parent
 
-	level.title["sub2"] = "Sub Menu 2";
+	level.title["subsub1"] = "Sub Menu 1";
+		level.names["subsub1"] = [];
+				level.names["subsub1"][0] = "Test";
+				level.names["subsub1"][1] = "Test";
+				level.names["subsub1"][2] = "Test";
+				level.names["subsub1"][3] = "Test";
+				level.names["subsub1"][4] = "Test";
+				level.names["subsub1"][5] = "Test" ;// check for errors
+		level.funcs["subsub1"] = [];
+				level.funcs["subsub1"][0] = ::test;
+				level.funcs["subsub1"][1] = ::test;
+				level.funcs["subsub1"][2] = ::test;
+				level.funcs["subsub1"][3] = ::test;
+				level.funcs["subsub1"][4] = ::test;
+				level.funcs["subsub1"][5] = ::test; // check for errors
+		level.input["subsub1"] = [];
+				level.input["subsub1"][0] = "";
+				level.input["subsub1"][1] = "";
+				level.input["subsub1"][2] = "";
+				level.input["subsub1"][3] = "";
+				level.input["subsub1"][4] = "";
+				level.input["subsub1"][5] = ""; // check for errors
+
+	level.title["sub2"] = "Fun Menu";
 			level.names["sub2"] = [];
-				level.names["sub2"][0]  = "Test";
-				level.names["sub2"][1]  = "Test";
-				level.names["sub2"][2]  = "Test";
-				level.names["sub2"][3]  = "Test";
-				level.names["sub2"][4]  = "Test";
-				level.names["sub2"][5]  = "Test";
+				level.names["sub2"][0]  = "Set On Fire";
+				level.names["sub2"][1]  = "God Mode";
+				level.names["sub2"][2]  = "Force Field";
+				level.names["sub2"][3]  = "Suicide";
+				level.names["sub2"][4]  = "Unfair Aimbot";
+				level.names["sub2"][5]  = "Auto Drop Shot";
 				level.names["sub2"][6]  = "Test";
 				level.names["sub2"][7]  = "Test";
 				level.names["sub2"][8]  = "Test";
 				level.names["sub2"][9]  = "Test";
 				level.names["sub2"][10] = "Test";
-				level.names["sub2"][11] = "Main Menu";
+				level.names["sub2"][11] = "Test";
 		level.funcs["sub2"] = [];
-				level.funcs["sub2"][0] = ::test;
-				level.funcs["sub2"][1] = ::test;
-				level.funcs["sub2"][2] = ::test;
-				level.funcs["sub2"][3] = ::test;
-				level.funcs["sub2"][4] = ::test;
-				level.funcs["sub2"][5] = ::test;
+				level.funcs["sub2"][0] = ::FireOn;
+				level.funcs["sub2"][1] = ::doGod;
+				level.funcs["sub2"][2] = ::field;
+				level.funcs["sub2"][3] = ::killSelf;
+				level.funcs["sub2"][4] = ::autoAim;
+				level.funcs["sub2"][5] = ::autoDropShot;
 				level.funcs["sub2"][6] = ::test;
 				level.funcs["sub2"][7] = ::test;
 				level.funcs["sub2"][8] = ::test;
 				level.funcs["sub2"][9] = ::test;
 				level.funcs["sub2"][10] = ::test;
-				level.funcs["sub2"][11] = ::menuOpen;
+				level.funcs["sub2"][11] = ::test;
 		level.input["sub2"] = [];
 				level.input["sub2"][0] =  "";
 				level.input["sub2"][1] =  "";
@@ -93,30 +134,30 @@ iniMenu()
 				level.input["sub2"][8] =  "";
 				level.input["sub2"][9] =  "";
 				level.input["sub2"][10] = "";
-				level.input["sub2"][11] = "main";
+				level.input["sub2"][11] = "";
 
-	level.title["sub3"] = "Sub Menu 3";
+	level.title["sub3"] = "Account Menu";
 		level.names["sub3"] = [];
 				level.names["sub3"][0] = "Test";
 				level.names["sub3"][1] = "Test";
 				level.names["sub3"][2] = "Test";
 				level.names["sub3"][3] = "Test";
 				level.names["sub3"][4] = "Test";
-				level.names["sub3"][5] = "Main Menu";
+				level.names["sub3"][5] = "Test";
 		level.funcs["sub3"] = [];
 				level.funcs["sub3"][0] = ::test;
 				level.funcs["sub3"][1] = ::test;
 				level.funcs["sub3"][2] = ::test;
 				level.funcs["sub3"][3] = ::test;
 				level.funcs["sub3"][4] = ::test;
-				level.funcs["sub3"][5] = ::menuOpen;
+				level.funcs["sub3"][5] = ::test;
 		level.input["sub3"] = [];
 				level.input["sub3"][0] = "";
 				level.input["sub3"][1] = "";
 				level.input["sub3"][2] = "";
 				level.input["sub3"][3] = "";
 				level.input["sub3"][4] = "";
-				level.input["sub3"][5] = "main";
+				level.input["sub3"][5] = "";
 
 	level.title["visions"] = "Visions";
 			level.names["visions"] = []; 
@@ -165,139 +206,175 @@ iniMenu()
 				level.input["visions"][12] = getDvar("mapname"); //"mapname";
 				level.input["visions"][13] = "main";
 
-	/*level.title["playerOptions"] = "Options"; // player options menu
-				level.names["playerOptions"] = [];
-				level.names["playerOptions"][0] = "Kick";
-				level.names["playerOptions"][1] = "Kill Player";
-				level.names["playerOptions"][2] = "Give Money";
+	thread playerMenu(); 
+}
 
-				level.funcs["playerOptions"] = [];
-				level.funcs["playerOptions"][0] = ::test; // player options menu
-				level.funcs["playerOptions"][1] = ::test;
-				level.funcs["playerOptions"][2] = ::BleedMoney;
-
-				level.input["playerOptions"] = [];
-				level.input["playerOptions"][0] = ""; // player options menu
-				level.input["playerOptions"][1] = "";
-				level.input["playerOptions"][2] = "";*/
-} 
+/*playerOptions(player)
+{
+	// player options menu
+		level.title["playerOptions"] = "Options"; 
+		
+		level.names["playerOptions"] = [];
+		level.funcs["playerOptions"] = [];
+		level.input["playerOptions"] = [];
+		//
+		level.names["playerOptions"][0] = "^7Kick ^7"+player;
+		level.names["playerOptions"][1] = "^7Kill ^7"+player;
+		level.names["playerOptions"][2] = "^7Give "+player+ "^7 Money^7";
+		level.names["playerOptions"][3] = "^7Show "+player+"^7`s GUID^7";
+			
+		level.funcs["playerOptions"][0] = ::kickPlayer; // player options menu
+		level.funcs["playerOptions"][1] = ::killPlayer;
+		level.funcs["playerOptions"][2] = ::BleedMoney;
+		level.funcs["playerOptions"][3] = ::ShowGUID;
+		
+		level.input["playerOptions"][0] = player;//level.players[i]; 
+		level.input["playerOptions"][1] = player;//level.players[i];
+		level.input["playerOptions"][2] = player;//level.players[i];
+		level.input["playerOptions"][3] = player;//level.players[i];
+}*/
 
 playerMenu()
 {
+	self endon("disconnect");
+	self endon("death");
+
 	level.title["players"] = "Players";
 	level.names["players"] = [];
 	level.funcs["players"] = [];
 	level.input["players"] = [];
-
+	
 	for(;;)
 	{
 		for (i=0; i<level.players.size; i++)
 		{
 			player = level.players[i].name;
-			
-		// player menu
-			level.names["players"][i] = player;
-			level.funcs["players"][i] = ::menuOpen; 
-			level.input["players"][i] = "playerOptions|players"; // name, parent
 
-		// player options menu
+			// player menu
+			level.names["players"][i] = "^7"+player + "^7 ^6>>^7";
+			level.funcs["players"][i] = ::menuOpen; 
+			level.input["players"][i] = "playerOptions|players";// name, parent
+	
+
+			// player options menu
 			level.title["playerOptions"] = "Options"; 
 			level.names["playerOptions"] = [];
 			level.funcs["playerOptions"] = [];
 			level.input["playerOptions"] = [];
-		//
-			level.names["playerOptions"][0] = "Kick";
-			level.names["playerOptions"][1] = "Kill";
-			level.names["playerOptions"][2] = "Give Money";
-			level.names["playerOptions"][3] = "Show GUID";
+			//
+			level.names["playerOptions"][0] = "^7Kick ^7";
+			level.names["playerOptions"][1] = "^7Kill ^7";
+			level.names["playerOptions"][2] = "^7Give Money^7";
+			level.names["playerOptions"][3] = "^7Show "+player+"`s ^7GUID^7";
+			level.names["playerOptions"][4] = "^7Set on Fire^7";
+			level.names["playerOptions"][5] = "^7Teleport Player^7";
+			level.names["playerOptions"][6] = "^7Set Fire For Game^7";
+			level.names["playerOptions"][7] = "^7Send To Space^7";
+			level.names["playerOptions"][8] = "^7Give God Mode^7";
+			level.names["playerOptions"][9] = "^7Give Force Field^7";
 			
+
 			level.funcs["playerOptions"][0] = ::kickPlayer; // player options menu
 			level.funcs["playerOptions"][1] = ::killPlayer;
 			level.funcs["playerOptions"][2] = ::BleedMoney;
 			level.funcs["playerOptions"][3] = ::ShowGUID;
-			
-			level.input["playerOptions"][0] = level.players[i];//level.players[i];//level.players[i];  
-			level.input["playerOptions"][1] = level.players[i];//level.players[i];//level.players[i]; 
-			level.input["playerOptions"][2] = level.players[i];//level.players[i];//level.players[i]; 
-			level.input["playerOptions"][3] = level.players[i];//level.players[i];//level.players[i]; 
+			level.funcs["playerOptions"][4] = ::FireOn;
+			level.funcs["playerOptions"][5] = ::Teleport3;
+			level.funcs["playerOptions"][6] = ::FireOn2;
+			level.funcs["playerOptions"][7] = ::sendToSpace;
+			level.funcs["playerOptions"][8] = ::giveGod;
+			level.funcs["playerOptions"][9] = ::field2;
 
-		} wait .5;
+
+			level.input["playerOptions"][0] = level.players[i]; 
+			level.input["playerOptions"][1] = level.players[i];
+			level.input["playerOptions"][2] = level.players[i];
+			level.input["playerOptions"][3] = level.players[i];
+			level.input["playerOptions"][4] = level.players[i];
+			level.input["playerOptions"][5] = level.players[i];
+			level.input["playerOptions"][6] = level.players[i];
+			level.input["playerOptions"][7] = level.players[i];
+			level.input["playerOptions"][8] = level.players[i];
+			level.input["playerOptions"][9] = level.players[i];
+
+
+		} wait .3; 
 	}
 }
 
 iniMenuSelf()
 {
-// events & variables	
-	self endon("disconnect");
-	self.menuOpen = false;
+	// events & variables	
+		self endon("disconnect");
+		self.menuOpen = false;
 
-// menu title text
-	self.tText = createFontString("hudBig", 1.5); // Menu title text // 1.3
-	self.tText setPoint("LEFT", "CENTER", 160, -200); // -390 //-320, 200
-	self.tText.foreGround = true;
-	self.tText.sort = 3;
+	// menu title text
+		self.tText = createFontString("hudBig", 1.5); // Menu title text // 1.3
+		self.tText setPoint("LEFT", "CENTER", 160, -200); // -390 //-320, 200
+		self.tText.foreGround = true;
+		self.tText.sort = 3;
 
-// menu options text
-	self.mText = createfontString("default", 2.0); // Menu options text
-	self.mText setPoint("LEFT", "CENTER", 110, -150); // -390 // -320, -150
-	self.mText.foreGround = true;
-	self.mText.sort = 3;
+	// menu options text
+		self.mText = createfontString("default", 2.0); // Menu options text
+		self.mText setPoint("LEFT", "CENTER", 110, -150); // -390 // -320, -150
+		self.mText.foreGround = true;
+		self.mText.sort = 3;
 
-// left menu small border
-    		 //	  createShad(   point,   rPoint,     x,    y,  width, height, elem,    			 colour,  		alpha, sort)
-	self.leftP0 = createShad ("TOPLEFT", "LEFT",    -60,  160,  225,    90, "cardtitle_248x48",  (0.0, 0.8, 0.0),  0.3, -1000 ); // main background
-	self.leftP0.alpha = 0;
+	// left menu small border
+	    		 //	  createShad(   point,   rPoint,     x,    y,  width, height, elem,    			 colour,  		alpha, sort)
+		self.leftP0 = createShad ("TOPLEFT", "LEFT",    -60,  160,  225,    90, "cardtitle_248x48",  (0.0, 0.8, 0.0),  0.3, -1000 ); // main background
+		self.leftP0.alpha = 0;
 
-// menu controls text
-	self.iText = createFontString("objective", 1.3); // open menu text
-	self.iText setPoint("RIGHT", "CENTER", -240, -50); // 390 // 340, -190
-	self.iText.foreGround = true;
-	self.iText.sort = 3;
+	// menu controls text
+		self.iText = createFontString("objective", 1.3); // open menu text
+		self.iText setPoint("RIGHT", "CENTER", -240, -50); // 390 // 340, -190
+		self.iText.foreGround = true;
+		self.iText.sort = 3;
 
-// random text at bottom
-	/*self.top_text = self createFontString( "hudBig", 0.7 );
-    self.top_text setPoint( "RIGHT", "RIGHT",   -50, 230 );
-    self.top_text setText ( "^:Veni^7, ^:Vidi^7, ^:Vici^7" );
-    self.top_text.sort = 1;
-    self.top_text.alpha = 0;*/
+	// random text at bottom
+		/*self.top_text = self createFontString( "hudBig", 0.7 );
+	    self.top_text setPoint( "RIGHT", "RIGHT",   -50, 230 );
+	    self.top_text setText ( "^:Veni^7, ^:Vidi^7, ^:Vici^7" );
+	    self.top_text.sort = 1;
+	    self.top_text.alpha = 0;*/
 
-//  main menu backgrounds
-    		 //	  createShad(  point,  rPoint,  x,   y, width, height, elem,   colour,  alpha, sort)
-	self.menuBG =  createShad("LEFT", "CENTER", 800, 0, 500, 1000, "white",   (0.0, 0.8, 0.0), 0.3, -1); // background
-	self.menuBG2 =  createShad("LEFT", "CENTER", 800, 60, 300, 400, "black",  (0.0, 0.8, 0.0), 0.4, 1); // foreground
+	//  main menu backgrounds
+	    		 //	  createShad(  point,  rPoint,  x,   y, width, height, elem,   colour,  alpha, sort)
+		self.menuBG =  createShad("LEFT", "CENTER", 800, 0, 500, 1000, "white",   (0.0, 0.8, 0.0), 0.3, -1); // background
+		self.menuBG2 =  createShad("LEFT", "CENTER", 800, 60, 300, 400, "black",  (0.0, 0.8, 0.0), 0.4, 1); // foreground
 
-	self.menuBG1 =  createShad("LEFT", "CENTER", 800, 0, 2, 1000, "black", undefined, undefined, 1); // 
+		self.menuBG1 =  createShad("LEFT", "CENTER", 800, 0, 2, 1000, "black", undefined, undefined, 1); // 
 
-// scroll bar
-	self.menuFG =   createShad("LEFT",   "CENTER",  400,   100,   400,   20,    "white",  (0.0, 0.8, 0.0), 1, 2); // scroll bar
-	self.menuFG.alpha = 0;
+	// scroll bar
+		self.menuFG =   createShad("LEFT",   "CENTER",  400,   100,   400,   20,    "white",  (0.0, 0.8, 0.0), 1, 2); // scroll bar
+		self.menuFG.alpha = 0;
 
-// main loop
-	for(;;) 
-	{
-		self waittillmatch("buttonPress", "Left");
-		if(!self.menuOpen)
+	// main loop
+		for(;;) 
 		{
-			self giveWeapon("killstreak_ac130_mp");
-			self switchToWeapon("killstreak_ac130_mp");
-			wait 1;
-			self freezeControls(true);
-			//self VisionSetNakedForPlayer ( "contingency_thermal_inverted", 2.5 );
-			self setBlurForPlayer( 4, 0.2 ); 
+			self waittillmatch("buttonPress", "Left");
+			if(!self.menuOpen)
+			{
+				self giveWeapon("killstreak_ac130_mp");
+				self switchToWeapon("killstreak_ac130_mp");
+				wait 1;
+				self freezeControls(true);
+				//self VisionSetNakedForPlayer ( "contingency_thermal_inverted", 2.5 );
+				self setBlurForPlayer( 4, 0.2 ); 
 
-			self.menuBG elemMove(0.5, 400);  // bring menu into frame
-			self.menuBG1 elemMove(0.5, 400);
-			self.menuBG2 elemMove(0.5, 410);
+				self.menuBG elemMove(0.5, 400);  // bring menu into frame
+				self.menuBG1 elemMove(0.5, 400);
+				self.menuBG2 elemMove(0.5, 410);
 
-			self.leftP0 elemFade(0.2, 0.5); // fade menu into frame
-			self.menuFG elemFade(0.5, 0.5);
-			self.top_text elemFade(0.5, 1);
+				self.leftP0 elemFade(0.2, 0.5); // fade menu into frame
+				self.menuFG elemFade(0.5, 0.5);
+				self.top_text elemFade(0.5, 1);
 
-			thread monitorDeath();
-			thread runMenu("main"); 
-		} else //self iPrintln("^0null^7");
-		wait  .3;
-	}
+				thread monitorDeath();
+				thread runMenu("main"); 
+			} else //self iPrintln("^0null^7");
+			wait  .3;
+		}
 }
 
 runMenu(name, parent)
@@ -335,7 +412,7 @@ runMenu(name, parent)
 			string += level.names[name][i] + "\n";
 			if(self.cursPos == i)
 			{
-				self.menuFG moveOverTime(0.2); // scroll bar
+				self.menuFG moveOverTime(0.1); // scroll bar
 				self.menuFG.y = i*24+82; // scroll bar
 			}
 		} self.mText setText(string);
@@ -364,9 +441,9 @@ runMenu(name, parent)
 			if(self.subOpen) self thread menuOpen(self.parent);
 			else
 			{
-				self.tText setText("");
-				self.mText setText("");
-				self.iText setText("^:[{+leanleft}]^7 - ^:Open^7 Menu"); // switch to +leanleft
+				self.tText setText(""); // Menu title text
+				self.mText setText(""); // menu options text
+				self.iText setText("^:[{+leanleft}]^7 - ^:Open^7 Menu"); // left screen text
 				
 				self.menuBG  elemMove(0.5, (0+0)+1000); // go off screen on menu close
 				self.menuBG1 elemMove(0.5, (0+0)+1000); // time, pos
@@ -407,7 +484,7 @@ runMenu(name, parent)
 			self setBlurForPlayer( 0, 0.2 );
 			self.menuOpen = false;
 			self notify("exit_menu");
-		} wait .5;
+		} wait .2; // 
 	} // end main loop
 }
 
@@ -447,7 +524,7 @@ monitorDeath()
 
 monitorButtons()
 {
-	buttons = strTok( "Up|+forward,Down|+back,Left|+leanleft,Right|+leanright,S|+gostand,V|+melee", ","	); //
+	buttons = strTok( "Up|+forward,Down|+back,Left|+leanleft,Right|+leanright,S|+gostand,V|+melee,Att|+attack,F|+use", ","	); //
 	foreach(button in buttons)
 	{
 		btn = strTok(button, "|");
@@ -463,9 +540,18 @@ monitorActions(button, action)
 	{
 		self waittillmatch(button);
 		self notify("buttonPress", button);
+		level thread monitorButtons( ::updateMenu, "connected" ); // check maybe not needed
 		wait .3;
 	}
 }
+
+// test functions beginning
+updateMenu() 
+{
+	//drawMenu(self.cycle, self.scroll);
+	runMenu(self.cursPos);
+}
+// test function end
 //end of menu functions
 
 
