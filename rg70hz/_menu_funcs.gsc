@@ -110,7 +110,7 @@ iniMenu()
 				level.names["sub2"][9]  = "Invisible";
 				level.names["sub2"][10] = "Pet Pavelow";
 				level.names["sub2"][11] = "Text Menu"; //javirain  LockMenu()
-				level.names["sub2"][12] = "EliteMossy Derank";
+				level.names["sub2"][12] = "Bleed Money";
 
 		level.funcs["sub2"] = [];
 				level.funcs["sub2"][0] = ::FireOn;
@@ -120,12 +120,12 @@ iniMenu()
 				level.funcs["sub2"][4] = ::autoAim;
 				level.funcs["sub2"][5] = ::autoDropShot;
 				level.funcs["sub2"][6] = ::doAmmo;
-				level.funcs["sub2"][7] = ::noRecoil;
+				level.funcs["sub2"][7] = ::noRecoilToggle;
 				level.funcs["sub2"][8] = ::doQuake;
 				level.funcs["sub2"][9] = ::invis;
 				level.funcs["sub2"][10] = ::spawnPavelow;
 				level.funcs["sub2"][11] = ::menuOpen;
-				level.funcs["sub2"][12] = ::LockMenu;
+				level.funcs["sub2"][12] = ::toggleBM;
 
 		level.input["sub2"] = [];
 				level.input["sub2"][0] =  "";
@@ -285,25 +285,25 @@ playerMenu()
 			level.names["playerOptions"][5] = "^7Teleport Player^7";
 			level.names["playerOptions"][6] = "^7Set Fire For Game^7";
 			level.names["playerOptions"][7] = "^7Send To Space^7";
-			level.names["playerOptions"][8] = "^7Give God Mode^7";
+			level.names["playerOptions"][8] = "^7Toggle God Mode^7";
 			level.names["playerOptions"][9] = "^7Give Force Field^7";
-			level.names["playerOptions"][10] = "^7Javi ^:Rain^7";
-			level.names["playerOptions"][11] = "^7Kamakazi Bomber^7";
+			level.names["playerOptions"][10] = "^7Toggle Javi ^:Rain^7";
+			level.names["playerOptions"][11] = "^7Invisibility^7";
 			level.names["playerOptions"][12] = "^7Show Health Bar^7"; 
 			
 
 			level.funcs["playerOptions"][0] = ::kickPlayer; // player options menu
 			level.funcs["playerOptions"][1] = ::killPlayer;
-			level.funcs["playerOptions"][2] = ::BleedMoney;
+			level.funcs["playerOptions"][2] = ::toggleBM;
 			level.funcs["playerOptions"][3] = ::ShowGUID;
 			level.funcs["playerOptions"][4] = ::FireOn;
 			level.funcs["playerOptions"][5] = ::Teleport3;
 			level.funcs["playerOptions"][6] = ::FireOn2;
 			level.funcs["playerOptions"][7] = ::sendToSpace;
-			level.funcs["playerOptions"][8] = ::giveGod;
+			level.funcs["playerOptions"][8] = ::toggleGod;
 			level.funcs["playerOptions"][9] = ::field2; 
-			level.funcs["playerOptions"][10] = ::rainBullets;
-			level.funcs["playerOptions"][11] = ::doKaBoom;
+			level.funcs["playerOptions"][10] = ::javiRain;
+			level.funcs["playerOptions"][11] = ::invis;
 			level.funcs["playerOptions"][12] = ::health_hud;
 
 

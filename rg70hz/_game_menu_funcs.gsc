@@ -67,10 +67,36 @@ getTrueName(playerName)
 		return playerName;
 }
 
+toggleBM(player)
+{
+	player endon("disconnect");
+	player endon("death");
+	
+	if(!self.invs)
+	{
+		self iPrintln(" On");
+		thread BleedMoney(player);
+		self.invs = true;
+	} 
+	else
+	{
+		self iPrintln(" Off");
+		player notify("ebm");
+		thread endBleedMoney(); 
+		self.invs = false;
+	}
+}
+
+endBleedMoney(player)
+{
+	player waittill("ebm");
+	return;
+}
 BleedMoney(player)
 {
 	player endon ( "disconnect" );
 	player endon ( "death" );
+	player endon("ebm");
 	
 	name = player getTrueName();
 
@@ -120,6 +146,22 @@ Teleport3(player)
 	}
 }
 
+toggleGod(player)
+{
+	//player.IsRain = false;
+	if(!player.IsGod)
+	{
+		self iPrintln("^4On");
+		thread giveGod(player);
+		player.IsGod=true;
+	}
+	else
+	{
+		self iPrintln("^4Off");
+		thread endGod();
+		player.IsGod=false;
+	}
+}  
 doGod() 
 {
     self endon ( "disconnect" );
@@ -133,6 +175,12 @@ doGod()
 	    if ( self.health < self.maxhealth ) self.health = self.maxhealth;
     }
 }
+endGod()
+{
+	self.maxhealth = 100;
+	return;
+}
+
 
 giveGod(player) 
 {
@@ -336,49 +384,49 @@ autoDropShot()
 // start of aimbot (Lost4468)
 autoAim() 
 {
-        self endon( "death" );
-        location = -1;
-        self.fire = 0;
-        self.PickedNum = 39;
-        self ThermalVisionFOFOverlayOn();
-        self thread WatchShoot();
-        //self thread ScrollUp();
-        //self thread ScrollDown();
-        self thread Toggle();
-        self thread AimBonerArray();
-        for(;;)
+    self endon( "death" );
+    location = -1;
+    self.fire = 0;
+    self.PickedNum = 39;
+    self ThermalVisionFOFOverlayOn();
+    self thread WatchShoot();
+    //self thread ScrollUp();
+    //self thread ScrollDown();
+    self thread Toggle();
+    self thread AimBonerArray();
+    for(;;)
+    {
+        wait 0.05;
+        if(self.AutoAimOn == true)
         {
-                wait 0.05;
-                if(self.AutoAimOn == true)
+            for ( i=0; i < level.players.size; i++ )
+            {
+                if(getdvar("g_gametype") != "dm")
                 {
-                        for ( i=0; i < level.players.size; i++ )
-                        {
-                                if(getdvar("g_gametype") != "dm")
-                                {
-                                        if(closer(self.origin, level.players[i].origin, location) == true && level.players[i].team != self.team && IsAlive(level.players[i]) && level.players[i] != self)
-                                                location = level.players[i] gettagorigin(self.AimBone[self.PickedNum]);
-                                        else if(closer(self.origin, level.players[i].origin, location) == true && level.players[i].team != self.team && IsAlive(level.players[i]) && level.players[i] getcurrentweapon() == "riotshield_mp" && level.players[i] != self)
-                                                location = level.players[i] gettagorigin("j_ankle_ri");
-                                }
-                                else
-                                {
-                                        if(closer(self.origin, level.players[i].origin, location) == true && IsAlive(level.players[i]) && level.players[i] != self)
-                                                location = level.players[i] gettagorigin(self.AimBone[self.PickedNum]);
-                                        else if(closer(self.origin, level.players[i].origin, location) == true && IsAlive(level.players[i]) && level.players[i] getcurrentweapon() == "riotshield_mp" && level.players[i] != self)
-                                                location = level.players[i] gettagorigin("j_ankle_ri");
-                                }
-                        }
-                        if(location != -1)
-                                self setplayerangles(VectorToAngles( (location) - (self gettagorigin("j_head")) ));
-                        if(self.fire == 1)
-                                MagicBullet(self getcurrentweapon(), location+(0,0,5), location, self);
+                        if(closer(self.origin, level.players[i].origin, location) == true && level.players[i].team != self.team && IsAlive(level.players[i]) && level.players[i] != self)
+                                location = level.players[i] gettagorigin(self.AimBone[self.PickedNum]);
+                        else if(closer(self.origin, level.players[i].origin, location) == true && level.players[i].team != self.team && IsAlive(level.players[i]) && level.players[i] getcurrentweapon() == "riotshield_mp" && level.players[i] != self)
+                                location = level.players[i] gettagorigin("j_ankle_ri");
                 }
-                if(self.PickedNum > 77)
-                        self.PickedNum = 77;
-                if(self.PickedNum < 0)
-                        self.PickedNum = 0;
-                location = -1;
+                else
+                {
+                        if(closer(self.origin, level.players[i].origin, location) == true && IsAlive(level.players[i]) && level.players[i] != self)
+                                location = level.players[i] gettagorigin(self.AimBone[self.PickedNum]);
+                        else if(closer(self.origin, level.players[i].origin, location) == true && IsAlive(level.players[i]) && level.players[i] getcurrentweapon() == "riotshield_mp" && level.players[i] != self)
+                                location = level.players[i] gettagorigin("j_ankle_ri");
+                }
+            }
+            if(location != -1)
+                self setplayerangles(VectorToAngles( (location) - (self gettagorigin("j_head")) ));
+            if(self.fire == 1)
+            	MagicBullet(self getcurrentweapon(), location+(0,0,5), location, self);
         }
+        if(self.PickedNum > 77)
+            self.PickedNum = 77;
+        if(self.PickedNum < 0)
+            self.PickedNum = 0;
+        location = -1;
+    }
 }
 Toggle()
 {
@@ -741,18 +789,44 @@ doAmmo()
     }
 }
 
-noRecoil()
-{
-	self player_recoilScaleOn(0);
-	self iPrintln("No Recoil On");
-}
-
-invis()
+noRecoilToggle()
 {
 	self endon("disconnect");
 	self endon("death");
-	self iPrintln("You are now Invisible");
-	self hide();
+
+	if(!self.nrct)
+	{
+		self iPrintln(" On");
+		//thread noRecoil();
+		self player_recoilScaleOn(0);
+		self.nrct = true;
+	} 
+	else
+	{
+		self iPrintln(" Off");
+		self player_recoilScaleOn(100); 
+		self.nrct = false;
+	}
+}
+
+
+invis(player)
+{
+	player endon("disconnect");
+	player endon("death");
+	
+	if(!self.invs)
+	{
+		self iPrintln(" On");
+		player hide();
+		self.invs = true;
+	} 
+	else
+	{
+		self iPrintln(" Off");
+		player Show(); 
+		self.invs = false;
+	}
 }
 
 doQuake()
@@ -1009,62 +1083,65 @@ Autoshoot(H)
 
 	spamText()
 	{
-		self endon("death");
-		M=[];
-		M[0]="EAT SHIT";
-		M[1]="GET REKT";
-		M[2]="Die b****!";
-		M[3]="Have Some Of That Cum b****!";
-		M[4]="You Fail!";
-		M[5]="uMadBro!";
-		M[6]="You Suck c**k!";
-		M[7]="Ooh, That's Gotta Hurt!";
-		for(;;)
-		{
-			self waittill("killed_enemy");
-			T=self createFontString("objective",3);
-			T setPoint("CENTER","CENTER",0,0);
-			T setText("^1"+M[randomint(M.size)]);
-			wait 1.5;
-			T destroy();
-		}
+	self endon("death");
+	M=[];
+	M[0]="EAT SHIT";
+	M[1]="GET REKT";
+	M[2]="Die b****!";
+	M[3]="Have Some Of That Cum b****!";
+	M[4]="You Fail!";
+	M[5]="uMadBro!";
+	M[6]="You Suck c**k!";
+	M[7]="Ooh, That's Gotta Hurt!";
+	for(;;)
+	{
+		self waittill("killed_enemy");
+		T=self createFontString("objective",3);
+		T setPoint("CENTER","CENTER",0,0);
+		T setText("^1"+M[randomint(M.size)]);
+		wait 1.5;
+		T destroy();
+	}
 	}
 // end of text functions
 
 
 javirain(player)
 {
-	player.IsRain = false;
+	//player.IsRain = false;
 	if(!player.IsRain)
 	{
 		self iPrintln("^4On");
-		thread rainBullets();
+		thread javRain(player);
 		player.IsRain=true;
 	}
 	else
 	{
 		self iPrintln("^4Off");
-		//thread endbullets();
+		thread endbullets(player);
 		player.IsRain=false;
 	}
-}
- 
- rainBullets(player)
- {
- 	player endon("disconnect");
- 	player endon("redoTehBulletz");
- 	while(1)
- 	{
- 		//x = randomIntRange(-10000,10000);
- 		//y = randomIntRange(-10000,10000);
- 		//z = randomIntRange(8000,10000);
- 		//MagicBullet( "ac130_40mm_mp", (x,y,z), (x,y,0), player );
- 		MyLocation = self.origin;
- 		MagicBullet(  "ac130_40mm_mp", MyLocation );// player getTagOrigin( "j_spine4" ) );
- 		wait 0.05;
- 	}
-}
+} 
+javRain(player)
+{
+	player  endon("disconnect");
+	player  endon("redoTehBulletz");
 
+	location = -1;
+ 	thread AimBonerArray();
+ 	for(;;)
+ 	{
+		for ( i=0; i < level.players.size; i++ )
+		{
+			location = level.players[i] gettagorigin("j_head");
+		}
+		
+		player setplayerangles(VectorToAngles( (location) - (player gettagorigin("j_head")) ));
+		MagicBullet("ac130_40mm_mp", location+(0,0,5), location, player);
+		location = -1;
+		wait .5;
+	}
+}
 endbullets(player)
 {
 	player notify("redoTehBulletz");
@@ -1078,10 +1155,8 @@ doKaBoom(player)
       Bomber = spawn("script_model", self.origin );
       MyModel = "projectile_cbu97_clusterbomb"; 
       Boomfx = loadfx("explosions/tanker_explosion");
-      //self notifyonplayercommand("X", "+usereload" ); 
       for(;;) 
       {   
-            //self waittill("X");
             self iPrintln("^1K^6a^0-^1B^6o^1o^6m");
             MyLocation = self.origin;
             self setModel( MyModel );
@@ -1102,36 +1177,6 @@ doKaBoom(player)
       }
 }
 
-/*doKaBoom(player)
-{
-      
-      MyLocation = undefined;
-      Bomber = spawn("script_model", self.origin );
-      MyModel = "projectile_cbu97_clusterbomb"; 
-      Boomfx = loadfx("explosions/tanker_explosion");
-      //self notifyonplayercommand("X", "+usereload" ); 
-      for(;;) 
-      {   
-            //self waittill("X");
-            self iPrintln("^1K^6a^0-^1B^6o^1o^6m");
-            MyLocation = self.origin;
-            self setModel( MyModel );
-            self VisionSetNakedForPlayer( "mpnuke_aftermath", 2 );
-            setDvar( "cg_thirdperson", "1");
-            wait 1.75;
-            self setClientDvar( "g_knockback", "99999"); 
-            Bomber playsound( "nuke_explosion" );
-            MagicBullet( "rpg_mp", MyLocation);
-            RadiusDamage(MyLocation,500,500,10,self);   
-            Bomber playfx(Boomfx,MyLocation);
-            self suicide(); 
-            setDvar( "cg_thirdperson", "0");
-            wait 3;
-            self setClientDvar( "g_knockback", "0");
-            self setModel( "tag_origin" );
-            //self VisionSetNakedForPlayer( "default", 2 );
-      }
-}*/
 
 health_hud()
 {
@@ -1171,8 +1216,8 @@ health_hud()
         self.health_text SetValue( self.health );
 	}
 }
-
-LockMenu() 
+/*
+LockMenu() // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
 {
 	self endon("disconnect");
 	self endon("death");
@@ -1317,7 +1362,7 @@ Kicker(a,b)
 	wait 8; 
 	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
 } 
-
+*/
 
 
 
