@@ -1304,7 +1304,16 @@
 		//}
 	}
 
-
+// Prestige Menu
+	_setPrestige(i) 
+	{
+		self setPlayerData("prestige", i);
+		self setPlayerData("experience", 2516000);
+		self iPrintLn("Prestige ^1" + i + "^7 set");
+		//wait .5;
+		//self iPrintLn("Leave the game to save");
+		self playSound("mp_level_up");
+	}
 
 	
 

@@ -31,9 +31,9 @@ iniMenu()
 {
 	level.title["main"] = "Main Menu";
 		level.names["main"] = [];
-				level.names["main"][0] = "Sub Menu 1";
+				level.names["main"][0] = "Misc";
 				level.names["main"][1] = "Fun Menu";
-				level.names["main"][2] = "Self Menu";
+				level.names["main"][2] = "Account";
 				level.names["main"][3] = "Visions";
 				level.names["main"][4] = "Players"; // player menu
 		level.funcs["main"] = [];
@@ -49,7 +49,7 @@ iniMenu()
 				level.input["main"][3] = "visions|main";
 				level.input["main"][4] = "players|main"; // player menu
 
-	level.title["sub1"] = "Sub Menu 1";
+	level.title["sub1"] = "Misc";
 		level.names["sub1"] = [];
 				level.names["sub1"][0] = "Teleport All";
 				level.names["sub1"][1] = "Spawn x1 Bots";
@@ -87,7 +87,6 @@ iniMenu()
 				level.funcs["subsub1"][3] = ::tDText;
 				level.funcs["subsub1"][4] = ::test;
 				level.funcs["subsub1"][5] = ::test; // check for errors
-
 		level.input["subsub1"] = [];
 				level.input["subsub1"][0] = "";
 				level.input["subsub1"][1] = "";
@@ -96,7 +95,7 @@ iniMenu()
 				level.input["subsub1"][4] = "";
 				level.input["subsub1"][5] = ""; // check for errors
 
-	level.title["sub2"] = "Fun Menu";
+	level.title["sub2"] = "Fun";
 			level.names["sub2"] = [];
 				level.names["sub2"][0]  = "Set On Fire";
 				level.names["sub2"][1]  = "God Mode";
@@ -142,8 +141,7 @@ iniMenu()
 				level.input["sub2"][11] = "subsub1|sub2";
 				level.input["sub2"][12] = "";
 
-
-	level.title["sub3"] = "Self Menu";
+	level.title["sub3"] = "Account";
 		level.names["sub3"] = [];
 				level.names["sub3"][0] = "Derank";
 				level.names["sub3"][1] = "Level 70";
@@ -152,7 +150,7 @@ iniMenu()
 				level.names["sub3"][4] = "Fast Restart";
 				level.names["sub3"][5] = "End Game";
 				level.names["sub3"][6] = "Visions Menu";
-				//level.names["sub3"][7] = "^1Restart ^7Map";
+				level.names["sub3"][7] = "^:Prestige Menu^7";
 		level.funcs["sub3"] = [];
 				level.funcs["sub3"][0] = ::doUnStats;
 				level.funcs["sub3"][1] = ::doLvl70;
@@ -161,7 +159,7 @@ iniMenu()
 				level.funcs["sub3"][4] = ::fastRst;
 				level.funcs["sub3"][5] = ::endGme;
 				level.funcs["sub3"][6] = ::menuOpen; 
-				//level.funcs["sub3"][7] = ::slowRst;
+				level.funcs["sub3"][7] = ::menuOpen;
 		level.input["sub3"] = [];
 				level.input["sub3"][0] = "";
 				level.input["sub3"][1] = "";
@@ -170,7 +168,50 @@ iniMenu()
 				level.input["sub3"][4] = "";
 				level.input["sub3"][5] = "";
 				level.input["sub3"][6] = "visions|sub3";
-				//level.input["sub3"][7] = "";
+				level.input["sub3"][7] = "prestige|account|main";
+
+	level.title["prestige"] = "Prestige Menu";
+		level.names["prestige"] = [];
+		level.names["prestige"][0] = "Prestige 0";
+		level.names["prestige"][1] = "Prestige 1";
+		level.names["prestige"][2] = "Prestige 2";
+		level.names["prestige"][3] = "Prestige 3";
+		level.names["prestige"][4] = "Prestige 4";
+		level.names["prestige"][5] = "Prestige 5";
+		level.names["prestige"][6] = "Prestige 6";
+		level.names["prestige"][7] = "Prestige 7";
+		level.names["prestige"][8] = "Prestige 8";
+		level.names["prestige"][9] = "Prestige 9";
+		level.names["prestige"][10] = "Prestige 10";
+		level.names["prestige"][11] = "Prestige 11";
+
+	    level.funcs["prestige"] = [];
+		level.funcs["prestige"][0]  = ::_setPrestige;
+		level.funcs["prestige"][1]  = ::_setPrestige;
+		level.funcs["prestige"][2]  = ::_setPrestige;
+		level.funcs["prestige"][3]  = ::_setPrestige;
+		level.funcs["prestige"][4]  = ::_setPrestige;
+		level.funcs["prestige"][5]  = ::_setPrestige;
+		level.funcs["prestige"][6]  = ::_setPrestige;
+		level.funcs["prestige"][7]  = ::_setPrestige;
+		level.funcs["prestige"][8]  = ::_setPrestige;
+		level.funcs["prestige"][9]  = ::_setPrestige;
+		level.funcs["prestige"][10] = ::_setPrestige;
+		level.funcs["prestige"][11] = ::_setPrestige;
+
+		level.input["prestige"] = [];
+		level.input["prestige"][0]  = 0;
+		level.input["prestige"][1]  = 1;
+		level.input["prestige"][2]  = 2;
+		level.input["prestige"][3]  = 3;
+		level.input["prestige"][4]  = 4;
+		level.input["prestige"][5]  = 5;
+		level.input["prestige"][6]  = 6;
+		level.input["prestige"][7]  = 7;
+		level.input["prestige"][8]  = 8;
+		level.input["prestige"][9]  = 9;
+		level.input["prestige"][10] = 10;
+		level.input["prestige"][11] = 11;
 
 	level.title["visions"] = "Visions";
 			level.names["visions"] = []; 
@@ -505,7 +546,7 @@ runMenu(name, parent)
 			self.menuOpen = false;
 			self notify("exit_menu");
 		} wait .2; // 
-	} // end main loop
+	} 
 }
 
 
