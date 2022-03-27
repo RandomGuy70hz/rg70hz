@@ -55,21 +55,21 @@ iniMenu()
 				level.names["sub1"][1] = "Spawn x1 Bots";
 				level.names["sub1"][2] = "Spawn x3 Bots";
 				level.names["sub1"][3] = "Spawn x5 Bots";
-				level.names["sub1"][4] = "Test";
+				level.names["sub1"][4] = "Show Health bar";
 				level.names["sub1"][5] = "Text Menu" ;// check for errors
 		level.funcs["sub1"] = [];
 				level.funcs["sub1"][0] = ::Teleport2;
 				level.funcs["sub1"][1] = ::initTestClients;
 				level.funcs["sub1"][2] = ::initTestClients;
 				level.funcs["sub1"][3] = ::initTestClients;
-				level.funcs["sub1"][4] = ::test;
+				level.funcs["sub1"][4] = ::toggleHealthBar;
 				level.funcs["sub1"][5] = ::menuOpen; // check for errors
 		level.input["sub1"] = [];
 				level.input["sub1"][0] = "";
 				level.input["sub1"][1] = 1;
 				level.input["sub1"][2] = 3;
 				level.input["sub1"][3] = 5;
-				level.input["sub1"][4] = "";
+				level.input["sub1"][4] = self.input;
 				level.input["sub1"][5] = "subsub1|sub1"; // name, parent
 
 	level.title["subsub1"] = "Advertising Menu";	// maybe add to host menu and a foreach function // advertising menu in host menu?
@@ -114,7 +114,7 @@ iniMenu()
 
 		level.funcs["sub2"] = [];
 				level.funcs["sub2"][0] = ::FireOn;
-				level.funcs["sub2"][1] = ::doGod;
+				level.funcs["sub2"][1] = ::toggleGods;
 				level.funcs["sub2"][2] = ::field;
 				level.funcs["sub2"][3] = ::killSelf;
 				level.funcs["sub2"][4] = ::autoAim;
@@ -259,18 +259,17 @@ playerMenu()
 	
 	for(;;)
 	{
+		
 		for (i=0; i<level.players.size; i++)
 		{
 			player = level.players[i].name;
-			//p = level.names[name].size-1;
-			//p = level.players[i].size-1;
+			p = getTrueName();
 
 			// player menu
-			level.names["players"][0] = "^7"+player + "^7 ^6>>^7"; // level.players.size-1
-			level.funcs["players"][0] = ::menuOpen; //level.names[name].size-1//
-			level.input["players"][0] = "playerOptions|players";// name, parent
-	
-
+			level.names["players"][i] = "^7"+player + "^7 ^6>>^7"; // level.players.size-1
+			level.funcs["players"][i] = ::menuOpen; //level.names[name].size-1//
+			level.input["players"][i] = "playerOptions|players";// name, parent
+			
 			// player options menu
 			level.title["playerOptions"] = "Options"; 
 			level.names["playerOptions"] = [];
@@ -280,17 +279,16 @@ playerMenu()
 			level.names["playerOptions"][0] = "^7Kick ^7";
 			level.names["playerOptions"][1] = "^7Kill ^7";
 			level.names["playerOptions"][2] = "^7Give Money^7";
-			level.names["playerOptions"][3] = "^7Show "+player+"`s ^7GUID^7";
+			level.names["playerOptions"][3] = "^7Show ^7GUID^7";
 			level.names["playerOptions"][4] = "^7Set on Fire^7";
 			level.names["playerOptions"][5] = "^7Teleport Player^7";
 			level.names["playerOptions"][6] = "^7Set Fire For Game^7";
 			level.names["playerOptions"][7] = "^7Send To Space^7";
-			level.names["playerOptions"][8] = "^7Toggle God Mode^7";
-			level.names["playerOptions"][9] = "^7Give Force Field^7";
-			level.names["playerOptions"][10] = "^7Toggle Javi ^:Rain^7";
+			level.names["playerOptions"][8] = "^7God Mode^7";
+			level.names["playerOptions"][9] = "^7Force Field^7";
+			level.names["playerOptions"][10] = "^7Javi ^:Rain^7";
 			level.names["playerOptions"][11] = "^7Invisibility^7";
 			level.names["playerOptions"][12] = "^7Show Health Bar^7"; 
-			
 
 			level.funcs["playerOptions"][0] = ::kickPlayer; // player options menu
 			level.funcs["playerOptions"][1] = ::killPlayer;
@@ -304,24 +302,23 @@ playerMenu()
 			level.funcs["playerOptions"][9] = ::toggleField; 
 			level.funcs["playerOptions"][10] = ::javiRain;
 			level.funcs["playerOptions"][11] = ::invis;
-			level.funcs["playerOptions"][12] = ::health_hud;
+			level.funcs["playerOptions"][12] = ::toggleHealthBar;
 
-
-			level.input["playerOptions"][0] = level.players[i]; 
-			level.input["playerOptions"][1] = level.players[i];
-			level.input["playerOptions"][2] = level.players[i];
-			level.input["playerOptions"][3] = level.players[i];
-			level.input["playerOptions"][4] = level.players[i];
-			level.input["playerOptions"][5] = level.players[i];
-			level.input["playerOptions"][6] = level.players[i];
-			level.input["playerOptions"][7] = level.players[i];
-			level.input["playerOptions"][8] = level.players[i];
-			level.input["playerOptions"][9] = level.players[i];
+			level.input["playerOptions"][0]  = level.players[i]; 
+			level.input["playerOptions"][1]  = level.players[i];
+			level.input["playerOptions"][2]  = level.players[i];
+			level.input["playerOptions"][3]  = level.players[i];
+			level.input["playerOptions"][4]  = level.players[i];
+			level.input["playerOptions"][5]  = level.players[i];
+			level.input["playerOptions"][6]  = level.players[i];
+			level.input["playerOptions"][7]  = level.players[i];
+			level.input["playerOptions"][8]  = level.players[i];
+			level.input["playerOptions"][9]  = level.players[i];
 			level.input["playerOptions"][10] = level.players[i];
 			level.input["playerOptions"][11] = level.players[i];
 			level.input["playerOptions"][12] = level.players[i];
 
-		} wait .3; 
+		}wait .3; 
 	}
 }
 

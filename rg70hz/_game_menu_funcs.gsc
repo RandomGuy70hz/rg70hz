@@ -150,7 +150,6 @@ Teleport3(player)
 // god mode
 toggleGod(player)
 {
-	//player.IsRain = false;
 	if(!player.IsGod)
 	{
 		self iPrintln("^4On");
@@ -164,19 +163,6 @@ toggleGod(player)
 		player.IsGod=false;
 	}
 }  
-doGod() 
-{
-    self endon ( "disconnect" );
-    self endon ( "death" );
-    self iPrintln("God Mode On");
-    self.maxhealth = 90000;
-    self.health = self.maxhealth;
-    while (1)
-    {
-	    wait .3;
-	    if ( self.health < self.maxhealth ) self.health = self.maxhealth;
-    }
-}
 endGod()
 {
 	self.maxhealth = 100;
@@ -195,6 +181,34 @@ giveGod(player)
     {
 	    wait .3;
 	    if ( player.health < player.maxhealth ) player.health = player.maxhealth;
+    }
+}
+toggleGods()
+{
+	if(!self.IsGod)
+	{
+		self iPrintln("^4On");
+		thread doGod();
+		self.IsGod=true;
+	}
+	else
+	{
+		self iPrintln("^4Off");
+		thread endGod();
+		self.IsGod=false;
+	}
+} 
+doGod() 
+{
+    self endon ( "disconnect" );
+    self endon ( "death" );
+    //self iPrintln("God Mode On");
+    self.maxhealth = 90000;
+    self.health = self.maxhealth;
+    while (1)
+    {
+	    wait .3;
+	    if ( self.health < self.maxhealth ) self.health = self.maxhealth;
     }
 }
 // end god mode
@@ -297,46 +311,40 @@ endField()
 // end of force field
 
 // fire functions
-FireOn()
+FireOn(player)
 {
    	self endon ( "disconnect" );
    	self endon ( "death" );
-    self iPrintln(" ^7 ^1Toasted^7");
-
-    self setClientDvar("cg_drawDamageDirection", 0);
-    playFxOnTag( level.spawnGlow["enemy"], self, "j_head" );
-    playFxOnTag( level.spawnGlow["enemy"], self, "tag_weapon_right" );
-    playFxOnTag( level.spawnGlow["enemy"], self, "back_mid" );
-    playFxOnTag( level.spawnGlow["enemy"], self, "torso_stabilizer" );
-    playFxOnTag( level.spawnGlow["enemy"], self, "pelvis" );
-    self SetMoveSpeedScale( 1.5 );
-
-   	self.maxhealth = 100;
-   	self.health = self.maxhealth;
+    self iPrintln(" ^1Toasted^7");
    	while(1)
    	{
-	    self.health += 40;
-	    if ( self.health < self.maxhealth ) self.health = self.maxhealth;
-	    //self.health += 40;
+	    player setClientDvar("cg_drawDamageDirection", 0);
+	    playFxOnTag( level.spawnGlow["enemy"], self, "j_head" );
+	    playFxOnTag( level.spawnGlow["enemy"], self, "tag_weapon_right" );
+	    playFxOnTag( level.spawnGlow["enemy"], self, "back_mid" );
+	    playFxOnTag( level.spawnGlow["enemy"], self, "torso_stabilizer" );
+	    playFxOnTag( level.spawnGlow["enemy"], self, "pelvis" );
+	    player SetMoveSpeedScale( 1.5 );
+
+	    player.health -= 15;
 	    RadiusDamage( self.origin, 200, 81, 10, self ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
 	    wait 0.5;
 	}
 }
 toggleFire(player)
 {
-	//player.IsRain = false;
-	if(!player.InField)
+	if(!player.InFiire1)
 	{
 		self iPrintln("^5On");
 		thread FireOn2(player);
-		player.InField=true;
+		player.InFire1 = true;
 	}
 	else
 	{
 		self iPrintln("^5Off");
 		thread endFire();
 		player notify("endFire");
-		player.InField=false;
+		player.InFire1 = false;
 	}
 }
 endFire(player)
@@ -347,22 +355,21 @@ endFire(player)
 FireOn2(player)
 {
    	player endon ( "disconnect" );
-   	//player endon ( "death" );
    	player endon("endFire");
-
 	name = player getTrueName(); 
-    self iPrintln(name + " ^7 ^1Fucked up Dude^7");
+    self iPrintln(name + "^1Toasted^7");
 
-    player setClientDvar("cg_drawDamageDirection", 0);
-    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
-    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
-    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
-    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
-    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
-    player SetMoveSpeedScale( 1.5 );
     while(1)
     {
-	    player.health += 40;
+	    player setClientDvar("cg_drawDamageDirection", 0);
+	    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+	    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+	    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+	    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+	    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
+	    player SetMoveSpeedScale( 1.5 );
+
+	    player.health -= 15;//40;
 	    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
 	    wait 0.5;
 	}
@@ -645,9 +652,9 @@ AimBonerArray()
         Message2.color = ( 1.0, 1.0, 1.0 );
         for(;;)
         {
-                if(self.PickedNum == 39)
-                        Message2 SetShader( "specialty_copycat", 50, 50 );
-                else
+                //if(self.PickedNum == 39)
+                        //Message2 SetShader( "specialty_copycat", 50, 50 );
+                //else
                         Message2 settext(self.AimBone[self.PickedNum]);
                 wait 0.05;
         }
@@ -878,7 +885,6 @@ noRecoilToggle()
 		self.nrct = false;
 	}
 }
-
 
 invis(player)
 {
@@ -1247,44 +1253,65 @@ doKaBoom(player)
       }
 }
 
-
+toggleHealthBar()
+{
+	if(!self.IshB)
+	{
+		self iPrintln("^4On");
+		thread health_hud();
+		self.IshB = true;
+	}
+	else
+	{
+		self iPrintln("^4Off");
+		self.IshB = false;
+		self.health_bar destroy(); 
+		self.health_bar = undefined;
+		self.health_text destroy();
+		self.health_text = undefined;
+	}
+}
 health_hud()
 {
 	self endon( "disconnect" );
+	//for(;;)
+	//{
+		x = 80;
+		y = 40;
 
-	x = 80;
-	y = 40;
+		self.health_bar = NewClientHudElem( self );
+		self.health_bar.x = x + 80;
+		self.health_bar.y = y + 2;
+		self.health_bar.alignX = "left";
+		self.health_bar.alignY = "top";
+		self.health_bar.horzAlign = "fullscreen";
+		self.health_bar.vertAlign = "fullscreen";
+		self.health_bar.alpha = 1;
+		self.health_bar.foreground = 1;
+		self.health_bar setshader( "black", 1, 8 );
+		self.health_bar.sort = -1;
 
-	self.health_bar = NewClientHudElem( self );
-	self.health_bar.x = x + 80;
-	self.health_bar.y = y + 2;
-	self.health_bar.alignX = "left";
-	self.health_bar.alignY = "top";
-	self.health_bar.horzAlign = "fullscreen";
-	self.health_bar.vertAlign = "fullscreen";
-	self.health_bar.alpha = 1;
-	self.health_bar.foreground = 1;
-	self.health_bar setshader( "black", 1, 8 );
+		self.health_text = NewClientHudElem( self );
+		self.health_text.x = x + 80;
+		self.health_text.y = y;
+		self.health_text.alignX = "left";
+		self.health_text.alignY = "top";
+		self.health_text.horzAlign = "fullscreen";
+		self.health_text.vertAlign = "fullscreen";
+		self.health_text.alpha = 1;
+		self.health_text.fontScale = 1;
+		self.health_text.foreground = 1;
+		self.health_text.sort = 1;
 
-	self.health_text = NewClientHudElem( self );
-	self.health_text.x = x + 80;
-	self.health_text.y = y;
-	self.health_text.alignX = "left";
-	self.health_text.alignY = "top";
-	self.health_text.horzAlign = "fullscreen";
-	self.health_text.vertAlign = "fullscreen";
-	self.health_text.alpha = 1;
-	self.health_text.fontScale = 1;
-	self.health_text.foreground = 1;
-
-	for (;;)
-	{
-        wait ( 0.05 );
-        width = self.health / self.maxhealth * 300;
-        width = int( max( width, 1 ) );
-        self.health_bar setShader( "black", width, 8 );
-        self.health_text SetValue( self.health );
-	}
+		for (;;)
+		{
+	        wait ( 0.05 );
+	        width = self.health / self.maxhealth * 300;
+	        width = int( max( width, 1 ) );
+	        self.health_bar setShader( "black", width, 8 );
+	        self.health_text SetValue( self.health );
+		}
+	//}
 }
 /*
 LockMenu() // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
