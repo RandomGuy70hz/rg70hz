@@ -145,13 +145,13 @@ iniMenu()
 
 	level.title["sub3"] = "Self Menu";
 		level.names["sub3"] = [];
-				level.names["sub3"][0] = "^1Derank^7";
-				level.names["sub3"][1] = "Level ^370^7";
+				level.names["sub3"][0] = "Derank";
+				level.names["sub3"][1] = "Level 70";
 				level.names["sub3"][2] = "Unlock All";
-				level.names["sub3"][3] = "^1Suicide^7";
+				level.names["sub3"][3] = "Suicide";
 				level.names["sub3"][4] = "Fast Restart";
 				level.names["sub3"][5] = "End Game";
-				level.names["sub3"][6] = "^6Visions ^7Menu";
+				level.names["sub3"][6] = "Visions Menu";
 				//level.names["sub3"][7] = "^1Restart ^7Map";
 		level.funcs["sub3"] = [];
 				level.funcs["sub3"][0] = ::doUnStats;

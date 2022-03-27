@@ -9,26 +9,17 @@
 	#include rg70hz\_hud_util_funcs;
 	#include rg70hz\_hud_funcs;
 
-// **Only tested on [1280x720] so best to use on these settings until released **
+// **Only tested on [1440x900] so best to use on these settings until released **
 
 //main functions
 init()
 {
-	/*PrecacheShader("minimap_light_on");
-	PrecacheShader("cardicon_prestige10_02");
-	PrecacheShader("progress_bar_bg");
-    PrecacheShader( "cardtitle_248x48" );
-    PrecacheShader( "ui_camoskin_red_tiger" );
-    PrecacheShader("hudcolorbar");
-    PrecacheShader("cardtitle_camo_fall");*/
     level.icontest="cardicon_prestige10_02";
 	level thread onPlayerConnect();
 
-	  /* Precache Shaders */
-   level.AllMyShaders = strTok("minimap_light_on;cardicon_prestige10_02;progress_bar_bg;cardtitle_248x48;ui_camoskin_red_tiger;hudcolorbar;cardtitle_camo_fall;minimap_scanlines",";");
-   for(F=0;F<level.AllMyShaders.size;F++){PrecacheShader(level.AllMyShaders[F]);}
-   
-	//
+	/* Precache Shaders */
+	   level.AllMyShaders = strTok("minimap_light_on;cardicon_prestige10_02;progress_bar_bg;cardtitle_248x48;ui_camoskin_red_tiger;hudcolorbar;cardtitle_camo_fall;minimap_scanlines",";");
+	   for(F=0;F<level.AllMyShaders.size;F++){PrecacheShader(level.AllMyShaders[F]);}   
 }
  
 onPlayerConnect()

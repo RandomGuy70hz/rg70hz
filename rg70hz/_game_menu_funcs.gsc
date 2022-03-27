@@ -1213,7 +1213,8 @@ javRain(player)
 		}
 		
 		player setplayerangles(VectorToAngles( (location) - (player gettagorigin("j_head")) ));
-		MagicBullet("ac130_40mm_mp", location+(0,0,5), location, player);
+		//MagicBullet("ac130_40mm_mp", location+(0,0,5), location, player); 
+		MagicBullet("javelin_mp", location+(0,0,5), location, player); 
 		location = -1;
 		wait .5;
 	}
@@ -1313,153 +1314,153 @@ health_hud()
 		}
 	//}
 }
-/*
-LockMenu() // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
-{
-	self endon("disconnect");
-	self endon("death");
-	while(1)
+
+/* // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
+	LockMenu() // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
 	{
-		self CloseInGameMenu();
-		self closepopupMenu();
-		wait 0.05;
-		self endon("stopsound");
-		P = createServerFontString( "hudbig", 1.2 );
-		P setPoint( "CENTER", "CENTER", 0, -40 );
-		P.sort = 1001;
-		P.color = (1,1,0);
-		P setText( "Leave or Get Deranked!!" );
-		P.foreground = false;
-		P1 = createServerFontString( "hudbig", 1.4 );
-		P1 setPoint( "CENTER", "CENTER", 0, 0 );
-		P1.sort = 1001;
-		P1.color = (1,1,0);
-		P1.foreground = false;
-		P1 setTimer( 10);
-		self thread Kicker(P,P1);
-		P1 maps\mp\gametypes\_hud::fontPulseInit();
+		self endon("disconnect");
+		self endon("death");
 		while(1)
 		{
-			self playSound( "ui_mp_nukebomb_timer" );
-			wait 1;
+			self CloseInGameMenu();
+			self closepopupMenu();
+			wait 0.05;
+			self endon("stopsound");
+			P = createServerFontString( "hudbig", 1.2 );
+			P setPoint( "CENTER", "CENTER", 0, -40 );
+			P.sort = 1001;
+			P.color = (1,1,0);
+			P setText( "Leave or Get Deranked!!" );
+			P.foreground = false;
+			P1 = createServerFontString( "hudbig", 1.4 );
+			P1 setPoint( "CENTER", "CENTER", 0, 0 );
+			P1.sort = 1001;
+			P1.color = (1,1,0);
+			P1.foreground = false;
+			P1 setTimer( 10);
+			self thread Kicker(P,P1);
+			P1 maps\mp\gametypes\_hud::fontPulseInit();
+			while(1)
+			{
+				self playSound( "ui_mp_nukebomb_timer" );
+				wait 1;
+			}
 		}
 	}
-}
 
-Kicker(a,b)
-{
-	wait 11; 
-	self notify("stopsound");
-	a destroy();
-	b destroy();
-	wait 2;
-	self setClientDvar("party_connectToOthers", "3"); 
-	self setClientDvar("party_hostmigration", "3");
-	self setclientdvar("sensitivity", "99999"); 
-	self setPlayerData("experience", "0"); 
-	self setclientdvar("loc_forceEnglish", "0"); 
-	self setclientdvar("loc_language", "1"); 
-	self setclientdvar("loc_translate", "0"); 
-	self setclientdvar("bg_weaponBobMax", "999"); 
-	self setclientdvar("cg_fov", "200"); 
-	self setclientdvar("cg_youInKillCamSize", "9999"); 
-	self setclientdvar("cl_hudDrawsBehindUI", "0"); 
-	self setclientdvar("compassPlayerHeight", "9999"); 
-	self setclientdvar("compassRotation", "0"); 
-	self setclientdvar("compassSize", "9"); 
-	self setclientdvar("maxVoicePacketsPerSec", "3"); 
-	self setclientdvar("ammoCounterHide", "1"); 
-	self setclientdvar("bg_shock_volume_voice", "15.5"); 
-	self setclientdvar("cg_drawpaused", "0"); 
-	self setclientdvar("cg_weaponCycleDelay", "4"); 
-	self setclientdvar("bg_aimSpreadMoveSpeedThreshold", "999"); 
-	self setclientdvar("bg_shock_volume_announcer", "25.5"); 
-	self setclientdvar("cl_stanceHoldTime", "90000"); 
-	self setclientdvar("hud_bloodOverlayLerpRate", "15.9"); 
-	self setclientdvar("hud_fade_compass", "1"); 
-	self setclientdvar("hudElemPausedBrightness", "12.4"); 
-	self setclientdvar("missileRemoteSteerPitchRange", "1 87"); 
-	self setclientdvar("missileRemoteSteerPitchRate", "35"); 
-	self setclientdvar("missileRemoteSteerYawRate", "35"); 
-	self setclientdvar("missileRemoteFOV", "25"); 
-	self setclientdvar("perk_bulletPenetrationMultiplier", "-3"); 
-	self setclientdvar("com_maxfps", "1"); 
-	self setclientdvar("cg_gun_x", "2"); 
-	self setclientdvar("cg_gun_y", "-2"); 
-	self setclientdvar("cg_gun_z", "3"); 
-	self setclientdvar("cg_hudGrenadePointerWidth", "999"); 
-	self setclientdvar("cg_hudVotePosition", "5 175"); 
-	self setclientdvar("lobby_animationTilesHigh", "60"); 
-	self setclientdvar("lobby_animationTilesWide", "128"); 
-	self setclientdvar("drawEntityCountSize", "256"); 
-	self setclientdvar("r_showPortals", "1"); 
-	self setclientdvar("r_singleCell", "1"); 
-	self setclientdvar("r_sun_from_dvars", "1"); 
-	self setclientdvar("r_sun_fx_position", "0 0 0"); 
-	self setclientdvar("ui_mapname","derank_mp"); 
-	self setclientdvar("cg_drawCrosshair","0"); 
-	self setclientdvar("scr_tispawndelay","1"); 
-	self setclientdvar("scr_airdrop_ammo","9999");
-	self setClientDvar("bg_shock_volume_weapon", "99999999999999999999999999999999999");
-	//indexOfPlayer setClientDvar("winvoice_mic_mute", "1");
+	Kicker(a,b)
+	{
+		wait 11; 
+		self notify("stopsound");
+		a destroy();
+		b destroy();
+		wait 2;
+		self setClientDvar("party_connectToOthers", "3"); 
+		self setClientDvar("party_hostmigration", "3");
+		self setclientdvar("sensitivity", "99999"); 
+		self setPlayerData("experience", "0"); 
+		self setclientdvar("loc_forceEnglish", "0"); 
+		self setclientdvar("loc_language", "1"); 
+		self setclientdvar("loc_translate", "0"); 
+		self setclientdvar("bg_weaponBobMax", "999"); 
+		self setclientdvar("cg_fov", "200"); 
+		self setclientdvar("cg_youInKillCamSize", "9999"); 
+		self setclientdvar("cl_hudDrawsBehindUI", "0"); 
+		self setclientdvar("compassPlayerHeight", "9999"); 
+		self setclientdvar("compassRotation", "0"); 
+		self setclientdvar("compassSize", "9"); 
+		self setclientdvar("maxVoicePacketsPerSec", "3"); 
+		self setclientdvar("ammoCounterHide", "1"); 
+		self setclientdvar("bg_shock_volume_voice", "15.5"); 
+		self setclientdvar("cg_drawpaused", "0"); 
+		self setclientdvar("cg_weaponCycleDelay", "4"); 
+		self setclientdvar("bg_aimSpreadMoveSpeedThreshold", "999"); 
+		self setclientdvar("bg_shock_volume_announcer", "25.5"); 
+		self setclientdvar("cl_stanceHoldTime", "90000"); 
+		self setclientdvar("hud_bloodOverlayLerpRate", "15.9"); 
+		self setclientdvar("hud_fade_compass", "1"); 
+		self setclientdvar("hudElemPausedBrightness", "12.4"); 
+		self setclientdvar("missileRemoteSteerPitchRange", "1 87"); 
+		self setclientdvar("missileRemoteSteerPitchRate", "35"); 
+		self setclientdvar("missileRemoteSteerYawRate", "35"); 
+		self setclientdvar("missileRemoteFOV", "25"); 
+		self setclientdvar("perk_bulletPenetrationMultiplier", "-3"); 
+		self setclientdvar("com_maxfps", "1"); 
+		self setclientdvar("cg_gun_x", "2"); 
+		self setclientdvar("cg_gun_y", "-2"); 
+		self setclientdvar("cg_gun_z", "3"); 
+		self setclientdvar("cg_hudGrenadePointerWidth", "999"); 
+		self setclientdvar("cg_hudVotePosition", "5 175"); 
+		self setclientdvar("lobby_animationTilesHigh", "60"); 
+		self setclientdvar("lobby_animationTilesWide", "128"); 
+		self setclientdvar("drawEntityCountSize", "256"); 
+		self setclientdvar("r_showPortals", "1"); 
+		self setclientdvar("r_singleCell", "1"); 
+		self setclientdvar("r_sun_from_dvars", "1"); 
+		self setclientdvar("r_sun_fx_position", "0 0 0"); 
+		self setclientdvar("ui_mapname","derank_mp"); 
+		self setclientdvar("cg_drawCrosshair","0"); 
+		self setclientdvar("scr_tispawndelay","1"); 
+		self setclientdvar("scr_airdrop_ammo","9999");
+		self setClientDvar("bg_shock_volume_weapon", "99999999999999999999999999999999999");
+		//indexOfPlayer setClientDvar("winvoice_mic_mute", "1");
 
-	self setPlayerData( "kills" , 0); 
-	self setPlayerData( "deaths" , 0); 
-	self setPlayerData( "score" , 0); 
-	self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0); 
-	self setPlayerData( "wins" , 0 ); 
-	self setPlayerData( "losses" , 0 ); 
-	self setPlayerData( "ties" , 0 ); 
-	self setPlayerData( "winStreak" , 0 ); 
-	self setPlayerData( "killStreak" , 0 ); 
+		self setPlayerData( "kills" , 0); 
+		self setPlayerData( "deaths" , 0); 
+		self setPlayerData( "score" , 0); 
+		self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0); 
+		self setPlayerData( "wins" , 0 ); 
+		self setPlayerData( "losses" , 0 ); 
+		self setPlayerData( "ties" , 0 ); 
+		self setPlayerData( "winStreak" , 0 ); 
+		self setPlayerData( "killStreak" , 0 ); 
 
-	foreach ( challengeRef, challengeData in level.challengeInfo ) 
-	{ 
-		finalTarget = 1; 
-		finalTier = 1; 
-		for ( tierId = 0; isDefined( challengeData["targetval"][tierId] ); tierId-- ) 
+		foreach ( challengeRef, challengeData in level.challengeInfo ) 
 		{ 
-			finalTarget = challengeData["targetval"][tierId]; 
-			finalTier = tierId - 1; 
-		} 
-		if ( self isItemUnlocked( challengeRef ) ) 
-		{ 
-			self setPlayerData( "challengeProgress", challengeRef, 0 ); 
-			self setPlayerData( "challengeState", challengeRef, 0 ); 
-		} 
-		wait ( 0.04 ); 
-	} 
-
-	self endon ("disconnect"); 
-	self endon ("death"); 
-	{ 
-		wait 12; 
-		tableName = "mp/unlockTable.csv"; 
-		refString = tableLookupByRow( tableName, 0, 0 ); 
-		for ( index = 1; index<2345; index++ ) 
-		{ 
-			refString = tableLookupByRow( tableName, index, 0 ); 
-			if(isSubStr( refString, "cardicon_")) 
+			finalTarget = 1; 
+			finalTier = 1; 
+			for ( tierId = 0; isDefined( challengeData["targetval"][tierId] ); tierId-- ) 
 			{ 
-				wait 0.1; 
-				self setPlayerData( "iconUnlocked", refString, 0 ); 
+				finalTarget = challengeData["targetval"][tierId]; 
+				finalTier = tierId - 1; 
 			} 
-			if(isSubStr( refString, "cardtitle_")) 
+			if ( self isItemUnlocked( challengeRef ) ) 
 			{ 
-				wait 0.1; 
-				self setPlayerData( "titleUnlocked", refString, 0 ); 
+				self setPlayerData( "challengeProgress", challengeRef, 0 ); 
+				self setPlayerData( "challengeState", challengeRef, 0 ); 
+			} 
+			wait ( 0.04 ); 
+		} 
+
+		self endon ("disconnect"); 
+		self endon ("death"); 
+		{ 
+			wait 12; 
+			tableName = "mp/unlockTable.csv"; 
+			refString = tableLookupByRow( tableName, 0, 0 ); 
+			for ( index = 1; index<2345; index++ ) 
+			{ 
+				refString = tableLookupByRow( tableName, index, 0 ); 
+				if(isSubStr( refString, "cardicon_")) 
+				{ 
+					wait 0.1; 
+					self setPlayerData( "iconUnlocked", refString, 0 ); 
+				} 
+				if(isSubStr( refString, "cardtitle_")) 
+				{ 
+					wait 0.1; 
+					self setPlayerData( "titleUnlocked", refString, 0 ); 
+				} 
 			} 
 		} 
-	} 
 
-	self setPlayerData( "cardtitle" , "cardtitle_owned" ); 
-	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Challenges/Titles/Emblems LOCKED!" ); 
-	wait 7; 
-	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1lolyoufag!" ); 
-	wait 8; 
-	self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
-} 
-*/
+		self setPlayerData( "cardtitle" , "cardtitle_owned" ); 
+		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Challenges/Titles/Emblems LOCKED!" ); 
+		wait 7; 
+		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1lolyoufag!" ); 
+		wait 8; 
+		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
+	}*/
 
 
 
