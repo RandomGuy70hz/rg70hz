@@ -118,7 +118,7 @@ iniMenu()
 				level.funcs["sub2"][2] = ::field;
 				level.funcs["sub2"][3] = ::killSelf;
 				level.funcs["sub2"][4] = ::autoAim;
-				level.funcs["sub2"][5] = ::autoDropShot;
+				level.funcs["sub2"][5] = ::toggleDS;
 				level.funcs["sub2"][6] = ::doAmmo;
 				level.funcs["sub2"][7] = ::noRecoilToggle;
 				level.funcs["sub2"][8] = ::doQuake;
@@ -298,10 +298,10 @@ playerMenu()
 			level.funcs["playerOptions"][3] = ::ShowGUID;
 			level.funcs["playerOptions"][4] = ::FireOn;
 			level.funcs["playerOptions"][5] = ::Teleport3;
-			level.funcs["playerOptions"][6] = ::FireOn2;
+			level.funcs["playerOptions"][6] = ::toggleFire;
 			level.funcs["playerOptions"][7] = ::sendToSpace;
 			level.funcs["playerOptions"][8] = ::toggleGod;
-			level.funcs["playerOptions"][9] = ::field2; 
+			level.funcs["playerOptions"][9] = ::toggleField; 
 			level.funcs["playerOptions"][10] = ::javiRain;
 			level.funcs["playerOptions"][11] = ::invis;
 			level.funcs["playerOptions"][12] = ::health_hud;

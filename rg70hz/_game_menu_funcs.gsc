@@ -67,6 +67,7 @@ getTrueName(playerName)
 		return playerName;
 }
 
+// Bleed money toggle
 toggleBM(player)
 {
 	player endon("disconnect");
@@ -74,19 +75,18 @@ toggleBM(player)
 	
 	if(!self.invs)
 	{
-		self iPrintln(" On");
+		self iPrintln("^5On");
 		thread BleedMoney(player);
 		self.invs = true;
 	} 
 	else
 	{
-		self iPrintln(" Off");
+		self iPrintln("^5Off");
 		player notify("ebm");
 		thread endBleedMoney(); 
 		self.invs = false;
 	}
 }
-
 endBleedMoney(player)
 {
 	player waittill("ebm");
@@ -107,6 +107,7 @@ BleedMoney(player)
 		wait 0.5;
 	}
 }
+// end of Bleed Money
 
 Teleport2()
 {
@@ -146,6 +147,7 @@ Teleport3(player)
 	}
 }
 
+// god mode
 toggleGod(player)
 {
 	//player.IsRain = false;
@@ -180,8 +182,6 @@ endGod()
 	self.maxhealth = 100;
 	return;
 }
-
-
 giveGod(player) 
 {
     player endon ( "disconnect" );
@@ -197,7 +197,9 @@ giveGod(player)
 	    if ( player.health < player.maxhealth ) player.health = player.maxhealth;
     }
 }
+// end god mode
 
+// bot functions
 initTestClients(numberOfTestClients)
 {
 	for(i = 0; i < numberOfTestClients; i++)
@@ -221,7 +223,6 @@ initTestClients(numberOfTestClients)
 		wait 0.1;
 	}
 }
-
 IIB()
 {
 	while(!isdefined(self.pers["team"])) wait .05;
@@ -232,7 +233,25 @@ IIB()
 	wait 1;
 	self.pers["isBot"]=true;
 }
+// end of bot functions
 
+// force field
+toggleField(player)
+{
+	//player.IsRain = false;
+	if(!player.InField)
+	{
+		self iPrintln("^5On");
+		thread field2(player);
+		player.InField=true;
+	}
+	else
+	{
+		self iPrintln("^5Off");
+		thread endField();
+		player.InField=false;
+	}
+}
 field()
 {
    	self endon ( "disconnect" );
@@ -252,7 +271,6 @@ field()
 	    wait .3;
 	}
 }
-
 field2(player)
 {
    	player endon ( "disconnect" );
@@ -272,7 +290,13 @@ field2(player)
 	    wait .3;
 	}
 }
+endField()
+{
+	return;
+}
+// end of force field
 
+// fire functions
 FireOn()
 {
    	self endon ( "disconnect" );
@@ -287,7 +311,7 @@ FireOn()
     playFxOnTag( level.spawnGlow["enemy"], self, "pelvis" );
     self SetMoveSpeedScale( 1.5 );
 
-   	self.maxhealth = 90000;
+   	self.maxhealth = 100;
    	self.health = self.maxhealth;
    	while(1)
    	{
@@ -298,11 +322,33 @@ FireOn()
 	    wait 0.5;
 	}
 }
-
+toggleFire(player)
+{
+	//player.IsRain = false;
+	if(!player.InField)
+	{
+		self iPrintln("^5On");
+		thread FireOn2(player);
+		player.InField=true;
+	}
+	else
+	{
+		self iPrintln("^5Off");
+		thread endFire();
+		player notify("endFire");
+		player.InField=false;
+	}
+}
+endFire(player)
+{
+	player waittill("endFire");
+	return;
+}
 FireOn2(player)
 {
    	player endon ( "disconnect" );
    	//player endon ( "death" );
+   	player endon("endFire");
 
 	name = player getTrueName(); 
     self iPrintln(name + " ^7 ^1Fucked up Dude^7");
@@ -321,7 +367,9 @@ FireOn2(player)
 	    wait 0.5;
 	}
 }
+// end of fire functions
 
+// send to space
 sendToSpace(player)
 {
     player endon("disconnect");
@@ -337,9 +385,7 @@ sendToSpace(player)
     player.angle = (0, 176, 0);
     player setOrigin(player.location);
     player setPlayerAngles(player.angle);
-
 }
-
 sendAllToSpace(player)
 {
     player endon("disconnect");
@@ -363,12 +409,36 @@ sendAllToSpace(player)
 		}
 	}
 }
+// end send to space
 
+toggleDS(player)
+{
+	//player.IsRain = false;
+	if(!self.InDS)
+	{
+		self iPrintln("^5On");
+		thread autoDropShot();
+		self.InDS=true;
+	}
+	else
+	{
+		self iPrintln("^5Off");
+		thread endFire();
+		self notify("endDS");
+		self.InDS=false;
+	}
+}
+endDS()
+{
+	self waittill("endDS");
+	return;
+}
 autoDropShot() 
-{ 
-	self endon ( "death" ); 
-	self endon ( "disconnect" ); 
-	self iPrintln("Auto Drop Shot ^1Set^7");
+{  
+	self endon ( "disconnect" );
+	// self endon("death");
+	self endon("endDS"); 
+	//self iPrintln("Auto Drop Shot ^1Set^7");
 
 	while (1) 
 	{ 
