@@ -2,6 +2,7 @@
 	#include maps\mp\gametypes\_hud_util;
 	#include maps\mp\_utility;
 	#include common_scripts\utility;
+	#include rg70hz\_hud_funcs;
 
 // Test Function
 	test()
@@ -10,7 +11,7 @@
 	}
 
 // GUID Function
-	ShowGUID(player)
+	ShowGUID(i, player)
 	{
 		self iPrintLnBold("^:GUID: ^1" + player getGuid());
 	}
@@ -23,20 +24,19 @@
 	}
 
 // Suicide Functions
-	killPlayer(player)
+	killPlayer(i,player)
 	{
 		player suicide();
 		self iPrintln("^1Killed ^7" + player);
 	}
 	killSelf()
 	{
-
 		self suicide();
 		self iPrintln("^1Suicided^7");
 	}
 
 // Kick player
-	kickPlayer(player)
+	kickPlayer(i, player)
 	{
 	    kick(player getEntityNumber(), "EXE_PLAYERKICKED");
 	    self iPrintln("^1Kicked ^7" + player);
@@ -58,7 +58,7 @@
 	}
 
 // Bleed money toggle
-	toggleBM(player)
+	toggleBM(i,player)
 	{
 		player endon("disconnect");
 		player endon("death");
@@ -235,6 +235,23 @@
 		wait 1;
 		self.pers["isBot"]=true;
 	}
+	
+	// Bot todo
+		//self CreateMenu("bot","Bots","host");
+			//self addOption("bot","Spawn x1 Bot",::initTestClients1);
+			//self addOption("bot","Spawn x3 Bots",::initTestClients3);
+			//self addOption("bot","Spawn x5 Bots",::initTestClients5);
+			//self addOption("bot","Spawn x10 Bots",::initTestClients10);
+			//self addOption("bot","Spawn x15 Bots",::initTestClients15);
+			//self addToggleOption("bot","Bots Attack",::ToggleAttack,level.BotAttack);
+			//self addToggleOption("bot","Bots Move",::ToggleMove,level.BotMove);
+			//self addToggleOption("bot","Bots Watch Killcam",::ToggleKillcam,level.BotCam);
+			//self addToggleOption("bot","Bots Crouch",::ToggleCrouch,level.BotCr);
+			//self addToggleOption("bot","Bots Reload",::ToggleReload,level.BotReload);
+			//self addOption("bot","Kick All Bots",::kickAllBots);
+			//self addOption("bot","Kill All Bots",::killallbots);
+			//self addOption("bot","Teleport All Bots To Me",::teleAllBotsMe);
+			//self addToggleOption("bot","Shoot Bots to Crosshair",::botstocrossShoot,self.ShootBotsCross);
 
 // Force field
 	toggleField(player)
@@ -299,27 +316,27 @@
 // fire functions
 	FireOn(player)
 	{
-	   	self endon ( "disconnect" );
-	   	self endon ( "death" );
+	   	player endon ( "disconnect" );
+	   	player endon ( "death" );
 	    self iPrintln(" ^1Toasted^7");
 	   	while(1)
 	   	{
 		    player setClientDvar("cg_drawDamageDirection", 0);
-		    playFxOnTag( level.spawnGlow["enemy"], self, "j_head" );
-		    playFxOnTag( level.spawnGlow["enemy"], self, "tag_weapon_right" );
-		    playFxOnTag( level.spawnGlow["enemy"], self, "back_mid" );
-		    playFxOnTag( level.spawnGlow["enemy"], self, "torso_stabilizer" );
-		    playFxOnTag( level.spawnGlow["enemy"], self, "pelvis" );
+		    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+		    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+		    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+		    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+		    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
 		    player SetMoveSpeedScale( 1.5 );
 
-		    player.health -= 15;
-		    RadiusDamage( self.origin, 200, 81, 10, self ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
+		    player.health -= 40;
+		    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
 		    wait 0.5;
 		}
 	}
 	toggleFire(player)
 	{
-		if(!player.InFiire1)
+		if(!player.InFire1)
 		{
 			self iPrintln("^5On");
 			thread FireOn2(player);
@@ -328,7 +345,7 @@
 		else
 		{
 			self iPrintln("^5Off");
-			thread endFire();
+			thread endFire(player);
 			player notify("endFire");
 			player.InFire1 = false;
 		}
@@ -355,7 +372,7 @@
 		    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
 		    player SetMoveSpeedScale( 1.5 );
 
-		    player.health -= 15;//40;
+		    player.health -= 40;//40;
 		    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
 		    wait 0.5;
 		}
@@ -446,6 +463,7 @@
 	autoAim() 
 	{
 	    self endon( "death" );
+	    self waittill("Up");
 	    location = -1;
 	    self.fire = 0;
 	    self.PickedNum = 39;
@@ -453,6 +471,7 @@
 	    self thread WatchShoot();
 	    //self thread ScrollUp();
 	    //self thread ScrollDown();
+
 	    self thread Toggle();
 	    self thread AimBonerArray();
 	    for(;;)
@@ -489,33 +508,47 @@
 	        location = -1;
 	    }
 	}
+	toggleAimbot()
+	{
+		self endon("disconnect");
+        self notifyOnPlayerCommand( "Up", "+frag" );
+		//for(;;)
+		//{	
+			if(!self.aimBot)
+			{
+				self.aimBot = true;
+				self iPrintln("^5On");
+				thread autoAim();
+				self.AutoAimOn = 1;	
+				self.aimbotIn = createfontString("objective", 1);
+		        self.aimbotIn settext("Press {[+frag]} to toggle");
+		        self.aimbotIn setPoint("RIGHT", "CENTER", -220, -100);
+			}
+			else
+			{
+				//self waittill( "Up" );
+				self.aimBot = false;
+				self iPrintln("^5Off");
+				thread Toggle();
+				self.aimbotIn destroy();
+				self.aimbotIn = undefined;
+			} 
+			wait .5;
+		//}
+	}
 	Toggle()
 	{
-	        self endon("death");
-	        self waittillmatch("buttonPress", "F"); // Toggle
-	        self.combatHighOverlay = newClientHudElem( self );
-	        self.combatHighOverlay.x = 0;
-	        self.combatHighOverlay.y = 0;
-	        self.combatHighOverlay.alignX = "left";
-	        self.combatHighOverlay.alignY = "top";
-	        self.combatHighOverlay.horzAlign = "fullscreen";
-	        self.combatHighOverlay.vertAlign = "fullscreen";
-	        for(;;)
-	        {
-	            self waittill("F"); //
-	            self.AutoAimOn = 0;
-	            self.combatHighOverlay FadeOverTime( 1 );
-	            self.combatHighOverlay.alpha = 0;
-	            self waittill("F"); //
-	            self.AutoAimOn = 1;
-	            self.combatHighOverlay setshader ( "combathigh_overlay", 640, 480 );
-	            self.combatHighOverlay FadeOverTime( 1 );
-	            self.combatHighOverlay.alpha = 1;
-	            wait 1;
-	            self.combatHighOverlay setshader ( "combathigh_overlay", 640, 480 );
-	            self.combatHighOverlay FadeOverTime( 1 );
-	            self.combatHighOverlay.alpha = 0;
-	        }
+        self waittill("Up");
+        self.combatHighOverlay = newClientHudElem( self );
+        self.combatHighOverlay.x = 0;
+        self.combatHighOverlay.y = 0;
+        self.combatHighOverlay.alignX = "left";
+        self.combatHighOverlay.alignY = "top";
+        self.combatHighOverlay.horzAlign = "fullscreen";
+        self.combatHighOverlay.vertAlign = "fullscreen";
+        self.AutoAimOn = 0;
+        self.combatHighOverlay FadeOverTime( 1 );
+        self.combatHighOverlay.alpha = 0;
 	}
 	/* Aimbot Scrolls
 		ScrollUp()
@@ -622,19 +655,20 @@
 	        self.AimBone[76] = "j_mouth_ri";
 	        self.AimBone[77] = "tag_eye";
 	        Message2 = NewClientHudElem( self );
-	        Message2.alignX = "right";
-	        Message2.alignY = "top";
+	        Message2.alignX    = "right";
+	        Message2.alignY    = "top";
 	        Message2.horzAlign = "right";
 	        Message2.vertAlign = "top";
-	        Message2.foreground = true;
+	        Message2.foreground= true;
 	        Message2.fontScale = 1;
-	        Message2.font = "hudbig";
-	        Message2.alpha = 1;
-	        Message2.glow = 1;
+	        Message2.font      = "hudbig";
+	        Message2.alpha     = 1;
+	        Message2.glow      = 1;
 	        Message2.glowColor = ( 1, 0, 0 );
 	        Message2.glowAlpha = 1;
 	        self thread deleteondeath(Message2);
 	        Message2.color = ( 1.0, 1.0, 1.0 );
+
 
 	        for(;;)
 	        {
@@ -1049,42 +1083,68 @@
 		} 
 	}
 
+	tdToggle(heartElem)
+	{
+		if(!self.tdTog)
+		{
+			self.tdTog = true;
+			self iPrintln("On");
+			thread tDText();
+		}
+		else
+		{
+			self.tdTog = false;
+			self iPrintln("Off");
+			self notify ("kill3d");
+			thread kill3d();
+		}
+	}
+	kill3d(heartElem)
+	{
+		self waittill("kill3d");
+		heartElem destroy();
+		heartElem = undefined;
+		return;
+	}
 	doHeart()
 	{
+		self endon("kill3d");
 		heartElem = self createFontString( "smallfixed", 2.0 );
 		heartElem setPoint( "TOPRIGHT", "TOPRIGHT", 0, 15);
 		for (;;)
 		{
-			heartElem setText("^1S^0hARk xX");
+			heartElem setText("^6R^0G70HZ");
 			wait 0.00001;
-			heartElem setText("^0S^1h^0ARk xX");
+			heartElem setText("^0R^6G^070HZ");
+			wait 0.00001;
+			heartElem setText("^0RG^67^00HZ");
 			wait 0.00001; 
-			heartElem setText("^0Sh^1A^0Rk xX");
+			heartElem setText("^0RG7^60^0HZ");
 			wait 0.00001;
-			heartElem setText("^0ShA^1R^0k xX");
+			heartElem setText("^0RG70^6H^0Z");
 			wait 0.00001;
-			heartElem setText("^0ShAR^1k^0 xX");
+			heartElem setText("^0RG70H^6Z");
 			wait 0.00001;
-			heartElem setText("^0ShARk^1 x^0X");
+			heartElem setText("^0RG70HZ");
 			wait 0.00001;
-			heartElem setText("^0ShARk ^1x^0X");
+			heartElem setText("^0RG70H^6Z");
 			wait 0.00001;
-			heartElem setText("^0ShARk x^1X");
+			heartElem setText("^0RG70^6H^0Z");
 			wait 0.00001;
-			heartElem setText("^0ShARk x^1X");
+			heartElem setText("^0RG7^60^0HZ");
 			wait 0.00001;
-			heartElem setText("^0ShARk ^1x^0X");
+			heartElem setText("^0RG^67^00HZ");
 			wait 0.00001;
-			heartElem setText("^0ShARk^1 x^0X");
+			heartElem setText("^0R^6G^070HZ");
 			wait 0.00001;
-			heartElem setText("^0ShAR^1k^0 xX");
+			heartElem setText("^6R^0G70HZ");
 			wait 0.00001;
-			heartElem setText("^0ShA^1R^0 xX");
+			/*heartElem setText("^0R^6G^07^60^0H^6Z");
 			wait 0.00001;
-			heartElem setText("^0Sh^1A^0Rk xX");
+			heartElem setText("^6R^0G^67^00^6H^0Z");
 			wait 0.00001;
-			heartElem setText("^0S^1hARk xX");
-			wait 0.00001;
+			heartElem setText("^0R^6G^07^60^0H^6Z");
+			wait 0.00001;*/
 			heartElem ChangeFontScaleOverTime( 1.0 );
 			heartElem.fontScale = 2.0; 
 			wait 0.1;
@@ -1096,11 +1156,12 @@
 
 	doHeart1()
 	{
+		self endon("kill3d");
 		heartElem = self createFontString( "smallfixed", 2.0 );
 		heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -2, 14);
 		for ( ;; )
 		{
-			heartElem setText("^1ShARk xX");
+			heartElem setText("^1RG70HZ");
 			wait 0.00001;
 			heartElem ChangeFontScaleOverTime( 1.0 );
 			heartElem.fontScale = 2.0; 
@@ -1112,6 +1173,7 @@
 	}
 	doHeart2()
 	{
+		self endon("kill3d");
 		heartElem = self createFontString( "smallfixed", 2.0 );
 		heartElem setPoint( "TOPRIGHT", "TOPRIGHT", -4, 13);
 		for ( ;; )
@@ -1145,27 +1207,51 @@
 			}
 		}*/
 
+	spamToggle()
+	{
+		if(!self.spam)
+		{
+			self.spam = true;
+			self iPrintln("^5On");
+			thread spamText();
+		} 
+		else 
+		{
+			self.spam = false;
+			self iPrintln("^5Off");
+			self notify("disableT");
+			thread killSpam();
+		}
+	}
+	killSpam(T, M)
+	{
+		self waittill("disableT");
+		T destroy();
+		M destroy();
+		return;
+	}
 	spamText()
 	{
-	self endon("death");
-	M=[];
-	M[0]="EAT SHIT";
-	M[1]="GET REKT";
-	M[2]="Die b****!";
-	M[3]="Have Some Of That Cum b****!";
-	M[4]="You Fail!";
-	M[5]="uMadBro!";
-	M[6]="You Suck c**k!";
-	M[7]="Ooh, That's Gotta Hurt!";
-	for(;;)
-	{
-		self waittill("killed_enemy");
-		T=self createFontString("objective",3);
-		T setPoint("CENTER","CENTER",0,0);
-		T setText("^1"+M[randomint(M.size)]);
-		wait 1.5;
-		T destroy();
-	}
+		self endon("disconnect");
+		self endon("disableT");
+		M=[];
+		M[0]="EAT SHIT";
+		M[1]="GET REKT";
+		M[2]="Die b****!";
+		M[3]="Have Some Of That Cum b****!";
+		M[4]="You Fail!";
+		M[5]="uMadBro!";
+		M[6]="You Suck c**k!";
+		M[7]="Ooh, That's Gotta Hurt!";
+		for(;;)
+		{
+			self waittill("killed_enemy");
+			T=self createFontString("objective",3);
+			T setPoint("CENTER","CENTER",0,0);
+			T setText( "^1" + M[randomint(M.size)]);
+			wait 1.2;
+			T destroy();
+		}
 	}
 
 // Javelin Rain
@@ -1197,13 +1283,14 @@
 			for ( i=0; i < level.players.size; i++ )
 			{
 				location = level.players[i] gettagorigin("j_head");
+				//location = gettagorigin("j_head");
 			}
 			
 			player setplayerangles(VectorToAngles( (location) - (player gettagorigin("j_head")) ));
 			//MagicBullet("ac130_40mm_mp", location+(0,0,5), location, player); 
 			MagicBullet("javelin_mp", location+(0,0,5), location, player); 
-			location = -1;
-			wait .5;
+			//location = -1;
+			wait 1;//.5;
 		}
 	}
 	endbullets(player)
@@ -1304,18 +1391,360 @@
 		//}
 	}
 
+// Clone Me
+	CloneMe()
+	{
+		self ClonePlayer(99999);
+		self iprintln(self.name+" ^1Cloned");
+	}
+
+// Flashing Player
+	ToggleFlashingPlayer()
+	{
+		if(!self.FlashyDude)
+		{
+			self.FlashyDude=true;
+			self iprintln("^5On");
+			self thread doFlashyDude();
+		}
+		else
+		{
+			self.FlashyDude=false;
+			self iprintln("^5Off");
+			self notify("end_flashPlayer");
+			self show();
+		}
+	}
+	doFlashyDude()
+	{
+		self endon("end_flashPlayer");
+		for(;;)
+		{
+			self hide();
+			wait .1;
+			self show();
+			self iprintln("^"+randomInt(9)+" You are Flashing!");
+			wait 0.05;
+		}
+		wait 0.05;
+	}
+	ToggleFlashingPlayerp(player)
+	{
+		if(!player.FlashyDude)
+		{
+			player.FlashyDude=true;
+			self iprintln("^5On");
+			player thread doFlashyDude();
+		}
+		else
+		{
+			player.FlashyDude=false;
+			self iprintln("^5Off");
+			player notify("end_flashPlayer");
+			player show();
+		}
+	}
+	doFlashyDudep(player)
+	{
+		player endon("end_flashPlayer");
+		//playerP = getTrueName();
+		for(;;)
+		{
+			player hide();
+			wait .1;
+			player show();
+			wait 0.05;
+		}
+		wait 0.05;
+	}
+
+// Toggle Third Person
+	ToggleThirdPerson()
+	{
+		if(!self.ThirdPersonView)
+		{
+			self.ThirdPersonView = true;
+			self setClientDvar("cg_thirdperson",1);
+		}
+		else
+		{
+			self setClientDvar("cg_thirdperson",0);
+			self.ThirdPersonView = false;
+		}
+	}
+
+// Toggle Laser
+	ToggleLaserLight()
+	{
+		if(!self.LaserLight)
+		{
+			self.LaserLight = true;
+			self iPrintln("Laser ^2ON");
+			self setClientDvar("laserForceOn",1);
+		}
+		else
+		{
+			self.LaserLight = false;
+			self iPrintln("Laser ^1OFF");
+			self setClientDvar("laserForceOn",0);
+		}
+	}
+	
+// Jet Pack
+	doJetPack()
+	{
+		if(!self.jetpack)
+		{
+			self.jetpack=true;
+			self thread StartJetPack();
+			self iPrintln("^5On");
+			self iPrintln("Press [{+frag}] for jetpack");
+		}
+		else
+		{
+			self.jetpack=false;
+			self notify("jetpack_off");
+			self iPrintln("^5Off");
+		}
+	}
+	StartJetPack()
+	{
+		self endon("jetpack_off");
+		self.jetboots= 100;
+		for(i=0;;i++)
+		{
+			if(self Fragbuttonpressed() && self.jetboots>0)
+			{
+				playFX(level._effect["lght_marker_flare"],self getTagOrigin("J_Ankle_RI"));
+				playFx(level._effect["lght_marker_flare"],self getTagOrigin("J_Ankle_LE"));
+				earthquake(.15,.2,self gettagorigin("j_spine4"),50);
+				self.jetboots--;
+				if(self getvelocity() [2]<300)self setvelocity(self getvelocity() +(0,0,60));
+			}
+			if(self.jetboots<100 &&!self Fragbuttonpressed())self.jetboots++;
+			wait .05;
+		}
+	}
+
+// Fountain Functions
+	ToggleFountain(inp)
+	{
+		switch(inp)
+		{
+			case "money":
+				if(!self.MoneyFountain)
+				{
+					self.MoneyFountain = true;
+					self setClientDvar("cg_thirdperson",1);
+					//self thread BleedMoney();
+				}
+				else
+				{
+					self.MoneyFountain = false;
+					self setClientDvar("cg_thirdperson",0);
+					self notify("KillFountain");
+				}
+			break;
+			
+			case "blood":
+				if(!self.BloodFountain)
+				{
+					self.BloodFountain = true;
+					self setClientDvar("cg_thirdperson",1);
+					self thread BloodFountain();
+				}
+				else
+				{
+					self.BloodFountain = false;
+					self setClientDvar("cg_thirdperson",0);
+					self notify("KillFountain");
+				}
+			break;
+			
+			case "water":
+				if(!self.WaterFountain)
+				{
+					self.WaterFountain = true;
+					self setClientDvar("cg_thirdperson",1);
+					self thread WaterFountain();
+				}
+				else
+				{
+					self.WaterFountain = false;
+					self setClientDvar("cg_thirdperson",0);
+					self notify("KillFountain");
+				}
+			break;
+		}
+	}
+	/*BleedMoney()
+	{
+		self endon("KillFountain");
+		while(1)
+		{
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			playFx(level._effect["money"],self getTagOrigin("j_spine4"));
+			wait .001;
+		}
+	}*/
+	BloodFountain()
+	{
+	    self endon("KillFountain");
+		while(1)
+		{
+			playFx(level._effect["blood"],self getTagOrigin("j_spine4"));
+			wait .001;
+		}
+		wait .001;
+	}
+	WaterFountain()
+	{
+	    self endon("KillFountain");
+		while(1)
+		{
+			playfx(level._effect["water"],self getTagOrigin("j_spine4"));
+			wait .001;
+		}
+		wait .001;
+	}
+
+// Gametype Settings
+	/*ChangeGametype(gametype)
+	{
+		setDvar("g_gametype",gametype); // input
+		map_restart(false);
+	}*/
+
+// Kill
+	/*KillClientReal(me,client)
+	{
+		client thread [[level.callbackPlayerDamage]](me,me,100,0,"MOD_HEAD_SHOT",me getCurrentWeapon(),(0,0,0),(0,0,0),"head",0,0);
+	}*/
+
+// Menu Color Functions
+	_colors(i) 
+	{
+		self.menuFG.color  = (i);
+		self.leftP0.color  = (i);
+		self.menuBG.color  = (i);
+		self.menuBG2.color = (i);
+		self.menuBG1.color = (i);
+		self.menuFG.color  = (i);
+		self iPrintln   ("Done");
+		wait 1;
+	}
+	changeColors()
+	{
+		self.menuFG.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+		self.leftP0.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+		self.menuBG.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+		self.menuBG2.color = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+		self.menuBG1.color = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+		self.menuFG.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+	}
+
 // Prestige Menu
-	_setPrestige(i) 
+	_setPrestige(i, e) 
 	{
 		self setPlayerData("prestige", i);
 		self setPlayerData("experience", 2516000);
-		self iPrintLn("Prestige ^1" + i + "^7 set");
-		//wait .5;
-		//self iPrintLn("Leave the game to save");
-		self playSound("mp_level_up");
+
+		self thread presMessage("You Are Now ^1" +i+ "^7 Prestige\n" );
+		thread _prest(i); 
+
+		wait 0.5; self iPrintLn("Leave the game to save");
+		wait 1.5;
+	}
+	prest(i)
+	{
+		self endon("disconnect");
+		thread _prest();
+		for(;;)
+		{
+			for(e=0; e<self.pg.size; e++)
+			{
+				icon = self.pg[e];
+				/* Developer Notes:
+				---------------------
+					- Need to find a way to attach the corresponding numbers from pretige menu input
+						to my icon array.
+					- This as as prints the last number in array; 11; prestige 11 icon.
+					- 
+				--------------------- Updated: 30-Mar-22 [10:38pm]
+				*/ 
+				level.icontest = icon;
+			}
+			wait .5;
+		}
+	}
+	_prest(i)
+	{
+		self.pg = [];
+		self.pg[0]   = "rank_comm1" ;  	       			//  == level.input["prestige"][0]  = 0 ; 
+		self.pg[1]   = "rank_prestige1";   	   			//  == level.input["prestige"][1]  = 1 ;
+		self.pg[2]   = "rank_prestige2";   	   			//  == level.input["prestige"][2]  = 2 ;
+		self.pg[3]   = "rank_prestige3";   	   			//  == level.input["prestige"][3]  = 3 ;
+		self.pg[4]   = "rank_prestige4";   	   			//  == level.input["prestige"][4]  = 4 ;
+		self.pg[5]   = "rank_prestige5";   	   			//  == level.input["prestige"][5]  = 5 ;
+		self.pg[6]   = "rank_prestige6";   	   			//  == level.input["prestige"][6]  = 6 ;
+		self.pg[7]   = "rank_prestige7";   	   			//  == level.input["prestige"][7]  = 7 ;
+		self.pg[8]   = "rank_prestige8";   	   			//  == level.input["prestige"][8]  = 8 ;
+		self.pg[9]   = "rank_prestige9";   	   			//  == level.input["prestige"][9]  = 9 ;
+		self.pg[10]  = "rank_prestige10_02";   			//  == level.input["prestige"][10] = 10;
+		self.pg[11]  = "rank_prestige11" ;   			//  == level.input["prestige"][11] = 11;
+											   			//  level.icontest = (self.pg[i]);
+											   			//  level.icontest = i+self.pg[PickedNum];										  
+	}
+	presMessage(pres, i)
+	{
+		notifyData = spawnstruct();
+		notifyData.notifyText = pres;
+		notifyData.glowColor = (1,0,0);// ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));//(1.0, 0.5, 0.0); 
+		notifyData.duration = 5;
+		notifyData.notifyText.sort = 5;
+
+		thread prest();
+		notifyData.iconName = level.icontest;
+
+		self playLocalSound( "mp_level_up" );
+		self thread maps\mp\gametypes\_hud_message::notifyMessage( notifyData );
+		wait 1;
 	}
 
-	
+
+
+/* ------------------------------------------------------ */
+/* Glow Colors:
+	0.5, 0.0, 0.8 - Sexxy purple
+	1.0, 0.0, 0.0 - Epic Red
+	1.0, 0.0, 0.4 - Preppy Pink
+	0.0, 0.8, 0.0 - Epic Green
+	0.9, 1.0, 0.0 - Banana Yellow
+	1.0, 0.5, 0.0 - Burnt Orange
+	0.0, 0.5, 1.0 - Turquoise
+	0.0, 0.0, 1.0 - Deep Blue
+	0.3, 0.0, 0.3 - Deep Purple
+	0.0, 1.0, 0.0 - Light Green
+	0.5, 0.0, 0.2 - Maroon
+	0.0, 0.0, 0.0 - Black
+	1.0, 1.0, 1.0 - White
+	0.0, 1.0, 1.0 - Cyan
+	0.3, 0.6, 0.3 - Default 
+	*/
+
+// Fix force field toggle
+// clear text menu option
+// text menu toggles
+// fix kill text
+
 
 /* ------------------------------------------------------ */
 /* Credits - 
@@ -1473,5 +1902,36 @@
 		wait 8; 
 		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
 	}
+
+
+	//x[0] = i[0];
+		//x[1] = i[1];
+		//x[2] = i[2];
+		//x[3] = i[3];
+		//x[4] = i[4];
+		//x[5] = i[5];
+		//x[6] = i[6];
+		//x[7] = i[7];
+		//x[8] = i[8];
+		//x[9] = i[9];
+		//x[10]= i[10];
+		//x[11]= i[11];
+
+		//level.input["prestige"][0] = x[0]   
+		//level.input["prestige"][1] = x[1]  
+		//level.input["prestige"][2] = x[2]   
+		//level.input["prestige"][3] = x[3]   
+		//level.input["prestige"][4] = x[4]   
+		//level.input["prestige"][5] = x[5]  
+		//level.input["prestige"][6] = x[6]   
+		//level.input["prestige"][7] = x[7]   
+		//level.input["prestige"][8] = x[8]   
+		//level.input["prestige"][9] = x[9]  
+		//level.input["prestige"][10] = x[10] 
+		//level.input["prestige"][11] = x[11] 
+		//for(x=i; ; x++)
+		//{
+			//level.icontest = x;
+		//}
 	*/
 

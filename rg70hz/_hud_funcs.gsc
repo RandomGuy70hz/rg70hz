@@ -14,7 +14,7 @@ motdText()
 {
     self endon ( "disconnect" );
     self endon ( "death" );
-    level.Version = "^3[^1Development^3]^0";
+    level.Version = "^11.0^7";
     thread KillText();
 
     // Advertise Panels
@@ -24,21 +24,29 @@ motdText()
         self.motd3 = createRectangle ( "CENTER", "",     0, 235, "minimap_light_on",    1000, 1,  undefined, 100,   1); // MOTD Bar
 
     // scrolling text function
-        x = -1000;
+        //x = -1000;
         self.motd_text = self createFontString( "hudBig", .7 );
-        self.motd_text setPoint ( "CENTER", "", x, 220 );
-        self.motd_text setText ( "Mod name^3: ^:RG70hz^7       Mod Version^3: " + level.Version + "        ^7Thank you ^:"+self.name+"^7 for using my ^:Mod ^7(:       ^7Add me on Discord^3: ^:Random Guy 70hz^7#^:2299       Made by ^:Random Guy 70hz^7" );
+        //self.motd_text setPoint ( "CENTER", "", x, 220 );
+        self.motd_text setText ( "Mod name^3: ^:RG70hz^7       Mod Version^3: " + level.Version + "        ^7Thank you ^:"+self.name+"^7 for using my ^:Mod ^7(:       ^7Add me on Discord^3: ^:Random Guy 70hz^7#^:2299       ^7Made by ^:Random Guy 70hz^7");
         self.motd_text.sort = 2;
+        self.motd_text.foreGround = true; //
 
+        for(;;)
+        {
+            self.motd_text setPoint("CENTER", "", 1350, 220);
+            self.motd_text setPoint("CENTER", "", -1320, 220, 50);
+            
+            wait 47;
+        }
     //screen xOffset scrolling function made by ダフティ
-        while ( true )
+        /*while ( true )
         {
           self endon ("death");
           if ( x > 1000 ) x = -1000; self.motd_text setPoint( "CENTER", "", x, 220 );
           x++;
           //self.motd_text FadeOverTime( 0.2 );
           wait 1/30; // fps - speed
-        }
+        }*/
 }
 
 createShad(point, rPoint, x, y, width, height, elem, colour, alpha, sort)

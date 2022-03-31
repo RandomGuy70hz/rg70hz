@@ -17,8 +17,15 @@ init()
 	level thread onPlayerConnect();
 	/* Precaches */
 		level.icontest="cardicon_prestige10_02"; 
-		level.AllMyShaders = strTok("minimap_light_on;cardicon_prestige10_02;progress_bar_bg;cardtitle_248x48;ui_camoskin_red_tiger;hudcolorbar;cardtitle_camo_fall;minimap_scanlines",";");
+		level.AllMyShaders = strTok("minimap_light_on;cardicon_prestige10_02;progress_bar_bg;cardtitle_248x48;ui_camoskin_red_tiger;hudcolorbar;cardtitle_camo_fall;minimap_scanlines;rank_comm1;rank_prestige1;rank_prestige2;rank_prestige3;rank_prestige4;rank_prestige5;rank_prestige6;rank_prestige7;rank_prestige8;rank_prestige9;rank_prestige10;rank_prestige11",";");
 		for(F=0;F<level.AllMyShaders.size;F++){PrecacheShader(level.AllMyShaders[F]);}  
+		//remove all invisible boundries from every map 
+			ents = getEntArray();
+	    	for ( index = 0; index < ents.size; index++ )
+	    	{
+	        	if(isSubStr(ents[index].classname, "trigger_hurt"))
+	        	ents[index].origin = (0, 0, 9999999);
+	    	}
 }
  
 onPlayerConnect()
@@ -38,10 +45,14 @@ onPlayerSpawned()
 
 	if(self isHost()) 
 	{
-		iniMenu();
+		thread iniMenu();
+		thread playerMenu();
+		thread _admin();
+		thread _pretigeMenu();
+		thread _host();
 	}
 
-	else wait .5;
+	else thread iniMenu(); wait .5;
 	self thread monitorButtons(); // monitor buttons functions
 	self thread iniMenuSelf(); // run menu functions in background
 
@@ -56,7 +67,7 @@ onPlayerSpawned()
 		if( self.isFirstSpawn == true ) // stops loopings every spawn
 		{
 			self.isFirstSpawn = false; // stops looping every spawn
-			self myMessage( "Welcome ^:" +self.name+"^7 To My Mod\n" ); // plays msg on spawn
+			//self myMessage( "Welcome ^:" +self.name+"^7 To My Mod\n" ); // plays msg on spawn
 		}
 	}
 }
