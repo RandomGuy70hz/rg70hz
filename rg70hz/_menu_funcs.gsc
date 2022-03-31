@@ -39,7 +39,7 @@
 					level.names["main"][1] = "Fun Menu";
 					level.names["main"][2] = "Menu Colors";
 					level.names["main"][3] = "Prestige Menu";
-					
+
 				if(self isHost())
 				{
 					level.names["main"][4] = "Host";
@@ -189,7 +189,7 @@
 					level.names["sub3"][4] = "Fast Restart";
 					level.names["sub3"][5] = "End Game";
 					level.names["sub3"][6] = "Visions Menu";
-					level.names["sub3"][7] = "^:Prestige^7 Menu";
+					//level.names["sub3"][7] = "^:Prestige^7 Menu";
 			level.funcs["sub3"] = [];
 					level.funcs["sub3"][0] = ::doUnStats;
 					level.funcs["sub3"][1] = ::doLvl70;
@@ -198,7 +198,7 @@
 					level.funcs["sub3"][4] = ::fastRst;
 					level.funcs["sub3"][5] = ::endGme;
 					level.funcs["sub3"][6] = ::menuOpen; 
-					level.funcs["sub3"][7] = ::menuOpen;
+					//level.funcs["sub3"][7] = ::menuOpen;
 			level.input["sub3"] = [];
 					level.input["sub3"][0] = "";
 					level.input["sub3"][1] = "";
@@ -207,7 +207,7 @@
 					level.input["sub3"][4] = "";
 					level.input["sub3"][5] = "";
 					level.input["sub3"][6] = "visions|main";
-					level.input["sub3"][7] = "prestige|main";
+					//level.input["sub3"][7] = "prestige|main";
 	
 		level.title["visions"] = "Visions";
 				level.names["visions"] = []; 
