@@ -3,6 +3,19 @@
 	#include maps\mp\_utility;
 	#include common_scripts\utility;
 	#include rg70hz\_hud_funcs;
+	#include rg70hz\_menu_funcs;
+
+// stop fx
+	_stopFx()
+	{
+		self endon( "disconnect" );
+
+		self waittill("stopFx");
+		for(;;)
+		{
+			return;
+		}
+	}
 
 // Test Function
 	test()
@@ -11,9 +24,19 @@
 	}
 
 // GUID Function
-	ShowGUID(i, player)
-	{
-		self iPrintLnBold("^:GUID: ^1" + player getGuid());
+	ShowGUID()
+	{	
+		//name = player getTrueName();
+		//guy = name;
+		//self iPrintLnBold("^3GUID: ^1" + guy getGuid());
+		
+		for(i=0; i<level.players.size; i++)
+		{
+			player = level.players[i];
+			play = player getGuid();
+			self iPrintLnBold("^3GUID: ^1" + play);
+			wait 1;
+		}
 	}
 
 // Visions
@@ -24,10 +47,14 @@
 	}
 
 // Suicide Functions
-	killPlayer(i,player)
+	killPlayer(player)
 	{
-		player suicide();
-		self iPrintln("^1Killed ^7" + player);
+	
+			player suicide();
+			self iPrintln("^1Killed ^7" + player.name);
+		
+
+		
 	}
 	killSelf()
 	{
@@ -36,8 +63,12 @@
 	}
 
 // Kick player
-	kickPlayer(i, player)
+	kickPlayer(player)
 	{
+	    //kick(player getEntityNumber(), "EXE_PLAYERKICKED");
+	    //self iPrintln("^1Kicked ^7" + player);
+
+	    //name = player getTrueName();
 	    kick(player getEntityNumber(), "EXE_PLAYERKICKED");
 	    self iPrintln("^1Kicked ^7" + player);
 	}
@@ -58,44 +89,79 @@
 	}
 
 // Bleed money toggle
-	toggleBM(i,player)
+	_toggleBM()
 	{
-		player endon("disconnect");
-		player endon("death");
-		
-		if(!self.invs)
-		{
-			self iPrintln("^5On");
-			thread BleedMoney(player);
-			self.invs = true;
-		} 
-		else
-		{
-			self iPrintln("^5Off");
-			player notify("ebm");
-			thread endBleedMoney(); 
-			self.invs = false;
-		}
-	}
-	endBleedMoney(player)
-	{
-		player waittill("ebm");
-		return;
-	}
-	BleedMoney(player)
-	{
-		player endon ( "disconnect" );
-		player endon ( "death" );
-		player endon("ebm");
-		
-		name = player getTrueName();
+		self endon("disconnect");
+		self endon("death");
 
-		self iPrintln(name + " ^2IS RICH!!!^7");
-		while(1)
+		// instructions text
+			thread keod(self.toggleBM && self.tBM);
+			self.toggleBM = createfontString("objective", 1);
+			x = -325; y = 75; self.toggleBM setPoint("center", "center", x, y);
+			self.toggleBM setText("Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop");
+
+		for(;;)
 		{
-			playFx( level._effect["money"], player getTagOrigin( "j_spine4" ) );
-			wait 0.5;
+			self waittill("buttonPress", button);
+			// button monitors
+				if(button == "D")
+				{
+					if(!self.tBM)
+					{
+						self.tBM = true;
+						self iPrintln("On");
+						thread _bleedMoney();
+					}
+					else 
+					{
+						self.tBM = false;
+						self iPrintln("Off");
+						self notify("stopFx");
+						//return;
+					}
+				}
+
+				if(button == "K")
+				{
+					self.tBM = false;
+					self iPrintln("Stopped");
+					self notify("stopFx");
+
+					self.toggleBM destroy();
+					self.toggleBM = undefined;
+
+					return;
+				}
 		}
+	}
+	/*_endBM()
+	{
+		self endon( "disconnect" );
+		self endon("death");
+
+		self waittill("stopFx");
+		for(;;)
+		{
+			return;
+		}
+	}*/
+	_bleedMoney()
+	{
+		self endon("disconnect");
+		self endon("death");
+		self endon("stopFx");
+
+		//thread AimBonerArray();
+
+		if(self.tBM == true)
+		{
+			self iPrintln("You're Rich!!");
+			while(1)
+			{
+				playFx( level._effect["money"], self getTagOrigin( "j_spine4" ) );
+				wait 0.5;
+			}
+		} else return;
 	}
 
 // Teleport Functions
@@ -206,7 +272,7 @@
 	{
 		for(i = 0; i < numberOfTestClients; i++)
 		{
-			wait 0.3;
+			wait .3;
 			ent[i] = addtestclient();
 
 			if (!isdefined(ent[i]))
@@ -216,26 +282,117 @@
 			}
 
 			ent[i].pers["isBot"] = true;
-			//ent[i] thread doPrestige();
-			ent[i].pers["isBot"]=true;
-			ent[i].GunGameKills=0;
-			ent[i].OITMLives=3;
-			ent[i].OITMAlive=true;
+			ent[i] thread doPrestige();
 			ent[i] thread IIB();
-			wait 0.1;
+			wait .5;
+		} wait .5; self iPrintln("^5"+i+ "^7 Bots Spawned");
+	}
+	doPrestige(i)
+	{
+		if ( getDvar( "prestige" ) < "1" && getDvar( "experience" ) < "2516000" ) 
+		{ // Doesn't keep reseting prestige and experience.
+			self setPlayerData( "prestige", randomInt( 11 ) );
+			self setPlayerData( "experience", 2516000 );
 		}
 	}
 	IIB()
 	{
-		while(!isdefined(self.pers["team"])) wait .05;
-		self notify("menuresponse",game["menu_team"],"autoassign");
-		wait 0.5;
-		self notify("menuresponse","changeclass","class2");
+		while(!isdefined(self.pers["team"])) wait .5;
+		self notify("menuresponse", game["menu_team"], "autoassign");
+		wait .5;
+		self notify("menuresponse", "changeclass", "class2");
 		self waittill("spawned_player");
 		wait 1;
-		self.pers["isBot"]=true;
+		self.pers["isBot"] = true;
+		wait 1;
+
+		//self.pers["isBot"] setClientDvar("testClients_doMove",1);
+		//self.pers["isBot"] setClientDvar( "testClients_doAttack", 1 );
+		level.BotMove = true;
+		//if(self.pers["isBot"]) thread moveBots();
+		if (getDvarInt("testClients_doMove")) setDvar("testClients_doMove", 1);
+  			
 	}
+	ToggleMove()
+	{
+	     if(level.BotMove)
+		 {
+		     level.BotMove = false;
+		     self iPrintLnBold("^5Off");
+			 self.pers["isBot"] setClientDvar("testClients_doMove",0);
+			 self.pers["isBot"] setClientDvar( "testClients_doAttack", 0 );
+		 }
+		 else 
+		 {
+		    level.BotMove = true;
+		    self iPrintLnBold("^5On");
+			self.pers["isBot"] setClientDvar("testClients_doMove",1);
+			self.pers["isBot"] setClientDvar( "testClients_doAttack", 1);
+		 }
+	}
+	AttackBots()
+	{
+		if(!self.BotAttack)
+		{
+		     self.BotAttack = true;
+			 self iprintln("^2Bots Attack ^2[ON]");
+			 self setClientDvar("testClients_doAttack",1); 
+		}
+		else
+		{
+		    self.BotAttack = false;
+			 self iprintln("^2Bots Attack ^2[OFF]");
+			self setClientDvar("testClients_doAttack",0); 
+		}
+	}
+	MoveBots()
+	{
+		if(!self.BotMove)
+		{
+		    self.BotMove = true;
+			self iprintln("^2Bots Move ^2[ON]");
+			self setClientDvar("testClients_doMove",1); 
+		}
+		else
+		{
+		    self.BotMove = false;
+			self iprintln("^2Bots Move ^2[OFF]");
+			self setClientDvar("testClients_doMove",0); 
+		}
+	}
+	KickBot()
+	{
+		foreach ( player in level.players )
+		{
+			if ( isDefined ( player.pers [ "isBot" ] ) && player.pers [ "isBot" ] )
+			kick ( player getEntityNumber(), "EXE_PLAYERKICKED" );
+		}
+	}
+	/*moveBots()
+	{
+		self endon("disconnect");
+		self iPrintln("...bots moving");
+		for(;;)
+		{
+			start = self getTagOrigin( "tag_eye" );
+			end = anglestoforward(self getPlayerAngles()) * 1000000;
+			destination = BulletTrace(start, end, true, self)["position"];
+
+			foreach( player in level.players ) 
+			{
+					if (player.pers["isBot"] == true) 
+					{
+						if (isDefined( player.pers["isBot"] ) && player.pers["isBot"] )
+				        	        player setOrigin( destination );
+					}
+
 	
+					if (isDefined( player.pers["isBot"] ) && player.pers["isBot"] )
+				                player setOrigin( destination );
+	
+			} 
+		wait .5;}
+	}*/
 	// Bot todo
 		//self CreateMenu("bot","Bots","host");
 			//self addOption("bot","Spawn x1 Bot",::initTestClients1);
@@ -254,127 +411,308 @@
 			//self addToggleOption("bot","Shoot Bots to Crosshair",::botstocrossShoot,self.ShootBotsCross);
 
 // Force field
-	toggleField(player)
+	_toggleFF()
 	{
-		//player.IsRain = false;
-		if(!player.InField)
+		self endon("disconnect");
+		self endon("death");
+
+		//
+			thread keod(self.toggleFF && self.tFF);
+			self.toggleFF = createfontString("objective", 1);
+			x = -325; y = 75; self.toggleFF setPoint("center", "center", x, y);
+			self.toggleFF setText("Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop");
+
+		for(;;)
 		{
-			self iPrintln("^5On");
-			thread field2(player);
-			player.InField=true;
-		}
-		else
-		{
-			self iPrintln("^5Off");
-			thread endField();
-			player.InField=false;
+			self waittill("buttonPress", button);
+			if(button == "D")
+			{
+				if(!self.tFF)
+				{
+					self.tFF = true;
+					self iPrintln("On");
+					thread field();
+				}
+				else 
+				{
+					self.tFF = false;
+					self iPrintln("Off");
+					self notify("stopFF");
+
+					self.health = 100;
+					self SetMoveSpeedScale(1);
+				}
+			}
+			if(button == "K")
+			{
+				self.tFF = false;
+				self iPrintln("Stopped");
+				self notify("stopFF");
+
+				self.toggleFF destroy();
+				self.toggleFF = undefined;
+
+				self.health = 100;
+				self SetMoveSpeedScale(1);
+
+				return;
+			}
 		}
 	}
 	field()
 	{
 	   	self endon ( "disconnect" );
 	   	self endon ( "death" );
-	    self iPrintln("^0Death ^6Force Field ^2On^7");
+	   	self endon ( "stopFF" );
 
-	    self setClientDvar("cg_drawDamageDirection", 0);
-	    self SetMoveSpeedScale( 1.5 );
-
-	    self.maxhealth = 90000;
-	    self.health = self.maxhealth;
-	    while(1)
+	    if(self.tFF == true)
 	    {
-		    self.health += 40;
-		    if ( self.health < self.maxhealth ) self.health = self.maxhealth;
-		    RadiusDamage( self.origin, 200, 81, 10, self ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
-		    wait .3;
-		}
-	}
-	field2(player)
-	{
-	   	player endon ( "disconnect" );
-	   	player endon ( "death" );
-	    player iPrintln("^0Death ^6Force Field ^2On^7");
+		    //self setClientDvar("cg_drawDamageDirection", 0);
+		    self SetMoveSpeedScale( 1 );
 
-	    player setClientDvar("cg_drawDamageDirection", 0);
-	    player SetMoveSpeedScale( 1.5 );
-
-	    player.maxhealth = 90000;
-	    player.health = player.maxhealth;
-	    while(1)
-	    {
-		    player.health += 40;
-		    if ( player.health < player.maxhealth ) player.health = player.maxhealth;
-		    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
-		    wait .3;
+		    self.maxhealth = 90000;
+		    self.health = self.maxhealth;
+		    for(;;)
+		    {
+			    self.health += 40;
+			    if ( self.health < self.maxhealth ) self.health = self.maxhealth;
+			    RadiusDamage( self.origin, 200, 81, 10, self ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
+			    wait .3;
+			}
 		}
+		else return;
 	}
 	endField()
 	{
-		return;
+		self waittill("stopFF");
+		for(;;)
+		{
+			self.health = 100;
+		    self SetMoveSpeedScale( 1 );
+			return;
+		}
 	}
 
 // fire functions
-	FireOn(player)
+	// debug
+		/*FireOn(player)
+		{
+		   	player endon ( "disconnect" );
+		   	player endon ( "death" );
+		    self iPrintln(" ^1Toasted^7");
+		   	while(1)
+		   	{
+			    player setClientDvar("cg_drawDamageDirection", 0);
+			    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
+			    player SetMoveSpeedScale( 1.5 );
+
+			    player.health -= 40;
+			    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
+			    wait 0.5;
+			}
+		}
+		toggleFire(player)
+		{
+			if(!player.InFire1)
+			{
+				self iPrintln("^5On");
+				thread FireOn2(player);
+				player.InFire1 = true;
+			}
+			else
+			{
+				self iPrintln("^5Off");
+				thread endFire(player);
+				player notify("endFire");
+				player.InFire1 = false;
+			}
+		}*/
+		/*endFire()
+		{
+			playFxOnTag( "", self, "" );
+			return; 
+		}*/
+		/*FireOn2(player)
+		{
+		   	player endon ( "disconnect" );
+		   	player endon("stopFx");
+			name = player getTrueName(); 
+		    self iPrintln(name + "^1Toasted^7");
+
+		    while(1)
+		    {
+			    player setClientDvar("cg_drawDamageDirection", 0);
+			    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+			    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
+			    player SetMoveSpeedScale( 1.5 );
+
+			    player.health -= 40;//40;
+			    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
+			    wait 0.5;
+			}
+		}*/
+	_toggleFire()
 	{
-	   	player endon ( "disconnect" );
-	   	player endon ( "death" );
-	    self iPrintln(" ^1Toasted^7");
-	   	while(1)
+		self endon("disconnect");
+		self endon("death");
+
+		// instructions text
+			self.toggleFire = createfontString("objective", 1);
+			x = -325; y = 75; self.toggleFire setPoint("center", "center", x, y);
+			self.toggleFire setText("Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop");
+			thread keod(self.toggleFire && self.tFire);
+		for(;;)
+		{
+			self waittill("buttonPress", button);
+			if(button == "D")
+			{
+				if(!self.tFire)
+				{
+					self.tFire = true;
+					self iPrintln("On");
+					thread _fireOn();
+				}
+				else 
+				{
+					self.tFire = false;
+					self iPrintln("Off");
+					self notify("stopFx");
+					stopFxOnTag( level.spawnGlow["enemy"], self, "j_head" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], self, "tag_weapon_right" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], self, "back_mid" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], self, "torso_stabilizer" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], self, "pelvis" );
+
+					//thread keoc(level.spawnGlow["enemy"]);
+				}
+			}
+			if(button == "K")
+			{
+				self.tFire = false;
+				self iPrintln("Stopped");
+				self notify("stopFx");
+
+				self.toggleFire destroy();
+				self.toggleFire = undefined;
+
+				self iPrintln("ur ^5cool");
+		    	stopFxOnTag( level.spawnGlow["enemy"], self, "j_head" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], self, "tag_weapon_right" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], self, "back_mid" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], self, "torso_stabilizer" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], self, "pelvis" ); 
+				return;
+			}
+		}
+	}
+	_fireOn()
+	{	
+		self endon ("disconnect");
+		self endon("death");
+	   	self endon("stopFx");
+
+		self iPrintln("ur a ^1blazin");
+	   	for(;;)
 	   	{
-		    player setClientDvar("cg_drawDamageDirection", 0);
-		    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
-		    player SetMoveSpeedScale( 1.5 );
-
-		    player.health -= 40;
-		    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
-		    wait 0.5;
+		    playFxOnTag( level.spawnGlow["enemy"], self, "j_head" );
+		    playFxOnTag( level.spawnGlow["enemy"], self, "tag_weapon_right" );
+		    playFxOnTag( level.spawnGlow["enemy"], self, "back_mid" );
+		    playFxOnTag( level.spawnGlow["enemy"], self, "torso_stabilizer" );
+		    playFxOnTag( level.spawnGlow["enemy"], self, "pelvis" ); 
+		    wait .5;
 		}
 	}
-	toggleFire(player)
+
+	_toggleFireP(player)
 	{
-		if(!player.InFire1)
+		self endon("disconnect");
+		self endon("death");
+
+		// instructions text
+			self.toggleFire = createfontString("objective", 1);
+			x = -325; y = 75; self.toggleFire setPoint("center", "center", x, y);
+			self.toggleFire setText("Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop");
+			thread keod(self.toggleFire && self.tFire);
+
+		for(;;)
 		{
-			self iPrintln("^5On");
-			thread FireOn2(player);
-			player.InFire1 = true;
+			self waittill("buttonPress", button);
+			if(button == "D")
+			{
+				if(!self.tFire)
+				{
+					self.tFire = true;
+					self iPrintln("On");
+					thread _fireOnP();
+				}
+				else 
+				{
+					self.tFire = false;
+					self iPrintln("Off");
+					self notify("stopFx");
+					stopFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+			    	stopFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
+				}
+			}
+			if(button == "K")
+			{
+				self.tFire = false;
+				self iPrintln("Stopped");
+				self notify("stopFx");
+
+				self.toggleFire destroy();
+				self.toggleFire = undefined;
+
+				self iPrintln("ur ^5cool");
+		    	stopFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+		    	stopFxOnTag( level.spawnGlow["enemy"], player, "pelvis" ); 
+				return;
+			}
 		}
-		else
+	}
+	/*kfoc(elem)
 		{
-			self iPrintln("^5Off");
-			thread endFire(player);
-			player notify("endFire");
-			player.InFire1 = false;
-		}
-	}
-	endFire(player)
-	{
-		player waittill("endFire");
-		return;
-	}
-	FireOn2(player)
-	{
-	   	player endon ( "disconnect" );
-	   	player endon("endFire");
-		name = player getTrueName(); 
-	    self iPrintln(name + "^1Toasted^7");
+			self waittill("buttonPress", button)
 
-	    while(1)
-	    {
+			elem.stopFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
+	    	elem.stopFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+	    	elem.stopFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+	    	elem.stopFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+	    	elem.stopFxOnTag( level.spawnGlow["enemy"], player, "pelvis" ); 
+			return;
+		}*/
+	 
+	_fireOnP(player)
+	{	
+		player endon ("disconnect");
+		player endon("death");
+	   	player endon("stopFx");
+
+	   	for(;;)
+	   	{
+		    playFXOnTag( level.spawnGlow["enemy"], player, "j_head" ); 
+		    playFXOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
+		    playFXOnTag( level.spawnGlow["enemy"], player, "back_mid" );
+		    playFXOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
+		    playFXOnTag( level.spawnGlow["enemy"], player, "pelvis" );
+
 		    player setClientDvar("cg_drawDamageDirection", 0);
-		    playFxOnTag( level.spawnGlow["enemy"], player, "j_head" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "tag_weapon_right" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "back_mid" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "torso_stabilizer" );
-		    playFxOnTag( level.spawnGlow["enemy"], player, "pelvis" );
-		    player SetMoveSpeedScale( 1.5 );
-
-		    player.health -= 40;//40;
+			player.health -= 40;
 		    RadiusDamage( player.origin, 200, 81, 10, player ); // RadiusDamage( Origin, Range, Maximum Damage, Minimum Damage, Attacker );
-		    wait 0.5;
+		    wait .5;
 		}
 	}
 
@@ -432,7 +770,7 @@
 		else
 		{
 			self iPrintln("^5Off");
-			thread endFire();
+			//thread endFire();
 			self notify("endDS");
 			self.InDS=false;
 		}
@@ -459,221 +797,282 @@
 		} 
 	}
 
-// Aimbot (Lost4468)
+// Aimbot
 	autoAim() 
 	{
-	    self endon( "death" );
-	    self waittill("Up");
-	    location = -1;
-	    self.fire = 0;
-	    self.PickedNum = 39;
-	    self ThermalVisionFOFOverlayOn();
-	    self thread WatchShoot();
-	    //self thread ScrollUp();
-	    //self thread ScrollDown();
+	   // if(self.aimBot)
+	   //  {
+			self endon("death");
+			location = -1;
+		    self.fire = 0;
+		    self.PickedNum = 39;
+		    self.AutoAimOn = 1;
 
-	    self thread Toggle();
-	    self thread AimBonerArray();
-	    for(;;)
-	    {
-	        wait 0.05;
-	        if(self.AutoAimOn == true)
-	        {
-	            for ( i=0; i < level.players.size; i++ )
-	            {
-	                if(getdvar("g_gametype") != "dm")
-	                {
+		    self ThermalVisionFOFOverlayOn();
+		    self thread WatchShoot();
+			self thread AimBonerArray();
+		    self thread ScrollUp();
+		    self thread ScrollDown();
+
+		    for(;;)
+		    {
+		        wait .05;
+		        if(self.AutoAimOn == true)
+		        {
+		            for ( i=0; i < level.players.size; i++ )
+		            {
+		                if(getdvar("g_gametype") != "dm")
+		                {
 	                        if(closer(self.origin, level.players[i].origin, location) == true && level.players[i].team != self.team && IsAlive(level.players[i]) && level.players[i] != self)
 	                                location = level.players[i] gettagorigin(self.AimBone[self.PickedNum]);
 	                        else if(closer(self.origin, level.players[i].origin, location) == true && level.players[i].team != self.team && IsAlive(level.players[i]) && level.players[i] getcurrentweapon() == "riotshield_mp" && level.players[i] != self)
 	                                location = level.players[i] gettagorigin("j_ankle_ri");
-	                }
-	                else
-	                {
+		                }
+		                else
+		                {
 	                        if(closer(self.origin, level.players[i].origin, location) == true && IsAlive(level.players[i]) && level.players[i] != self)
 	                                location = level.players[i] gettagorigin(self.AimBone[self.PickedNum]);
 	                        else if(closer(self.origin, level.players[i].origin, location) == true && IsAlive(level.players[i]) && level.players[i] getcurrentweapon() == "riotshield_mp" && level.players[i] != self)
 	                                location = level.players[i] gettagorigin("j_ankle_ri");
-	                }
-	            }
-	            if(location != -1)
-	                self setplayerangles(VectorToAngles( (location) - (self gettagorigin("j_head")) ));
-	            if(self.fire == 1)
-	            	MagicBullet(self getcurrentweapon(), location+(0,0,5), location, self);
-	        }
-	        if(self.PickedNum > 77)
-	            self.PickedNum = 77;
-	        if(self.PickedNum < 0)
-	            self.PickedNum = 0;
-	        location = -1;
-	    }
-	}
-	toggleAimbot()
-	{
-		self endon("disconnect");
-        self notifyOnPlayerCommand( "Up", "+frag" );
-		//for(;;)
-		//{	
-			if(!self.aimBot)
-			{
-				self.aimBot = true;
-				self iPrintln("^5On");
-				thread autoAim();
-				self.AutoAimOn = 1;	
-				self.aimbotIn = createfontString("objective", 1);
-		        self.aimbotIn settext("Press {[+frag]} to toggle");
-		        self.aimbotIn setPoint("RIGHT", "CENTER", -220, -100);
-			}
-			else
-			{
-				//self waittill( "Up" );
-				self.aimBot = false;
-				self iPrintln("^5Off");
-				thread Toggle();
-				self.aimbotIn destroy();
-				self.aimbotIn = undefined;
-			} 
-			wait .5;
+		                }
+		            }
+
+		            if(location != -1) self setplayerangles(VectorToAngles( (location) - (self gettagorigin("j_head")) ));
+		            if(self.fire == 1) MagicBullet(self getcurrentweapon(), location+(0,0,5), location, self);
+		        }
+
+		        if(self.PickedNum > 77) self.PickedNum = 77;
+		        if(self.PickedNum < 0) self.PickedNum = 0;
+		        location = -1;
+		    }
 		//}
 	}
-	Toggle()
+
+	toggleAimbot(Message2)
 	{
-        self waittill("Up");
-        self.combatHighOverlay = newClientHudElem( self );
-        self.combatHighOverlay.x = 0;
-        self.combatHighOverlay.y = 0;
-        self.combatHighOverlay.alignX = "left";
-        self.combatHighOverlay.alignY = "top";
-        self.combatHighOverlay.horzAlign = "fullscreen";
-        self.combatHighOverlay.vertAlign = "fullscreen";
-        self.AutoAimOn = 0;
-        self.combatHighOverlay FadeOverTime( 1 );
-        self.combatHighOverlay.alpha = 0;
-	}
-	/* Aimbot Scrolls
-		ScrollUp()
+		self endon("disconnect");
+		self endon("death");
+
+		self thread rg70hz\_hud_util_funcs::KillText();
+		killAim();
+
+		//self.aimbotIn = createfontString("objective", 1);
+		//self.aimbotIn setPoint("RIGHT", "CENTER", -300, -100);
+		//self.aimbotIn settext("Press -^7\n 	 ^35^7 to ^5toggle^7^7\n"+" 	 ^33^7 To ^1Stop^7\n");
+
+		//self.aimbot_Scr = createfontString("objective", 1);
+		//self.aimbot_Scr setPoint("RIGHT", "CENTER", -130, -115);
+		//self.aimbot_Scr settext("^1[{+frag}] ^3/ ^1[{+actionslot 1}]^7 -  To ^5Cycle^7 Aimbone");
+
+		thread keod(self.aimBotIn);
+		self.aimBotIn = createfontString("objective", 1);
+		x = -275; y = 75; self.aimBotIn setPoint("center", "center", x, y);
+		self.aimBotIn setText("Press -^7 ^35^7 To ^5Toggle^7\n^33^7 To ^1Stop^7\n^1[{+frag}]^3/^1[{+actionslot 1}]^7 -  To ^5Cycle^7 Aimbone");
+
+
+		self iPrintln("^1On");
+		for(;;)
 		{
-		        self endon("death");
-		        self notifyOnPlayerCommand( "Up", "+actionslot 1" ); // ?
-		        self waittillmatch("buttonPress", "Att"); // 
-		        for(;;)
-		        {
-		                self waittill( "Up" );
-		                self.PickedNum++;
-		        }
+			self waittill("buttonPress", button);
+			if(button == "F") // toggle - actionslot 2 // keypad number 5
+			{
+				if(!self.aimBot)
+				{
+					
+					self.aimBot = true;
+					self iPrintln("^5On");
+					self.AutoAimOn = true;
+					self.AutoAimOn = 1;
+					self thread autoAim();
+				}
+				else 
+				{
+					self.aimBot = false;
+					self iPrintln("^5Off");
+
+					self.AutoAimOn = false;
+					self.AutoAimOn = 0;
+					
+					self.AimBone = undefined;
+	        		self.AimBone destroy();
+
+	        		Message2 destroy();
+					self ThermalVisionFOFOverlayOff();
+				}
+			}
+
+			if(button == "K") // kill function - actionslot 3 // keypad number 3
+			{
+				self.aimBot = false;
+				self.AutoAimOn = false;
+				self.AutoAimOn = 0;
+
+				self iPrintln("^1Off");
+
+				self.AimBone = undefined;
+        		self.AimBone destroy();
+
+        		self.aimbotIn destroy();
+				self.aimbotIn = undefined;
+
+				//self.aimbot_Scr destroy();
+				//self.aimbot_Scr = undefined;
+
+        		Message2 destroy();
+
+				self ThermalVisionFOFOverlayOff();
+				return;
+			}
 		}
-		ScrollDown()
-		{
-		        self endon("death");
-		        self notifyOnPlayerCommand( "Down", "+actionslot 2" ); // ?
-		        for(;;)
-		        {
-		                self waittill( "Down" );
-		                self.PickedNum--;
-		        }
-		}*/
+	}
+	killAim()
+	{
+        //self.combatHighOverlay = newClientHudElem( self );
+        //self.combatHighOverlay.x = 0;
+        //self.combatHighOverlay.y = 0;
+        //self.combatHighOverlay.alignX = "left";
+        //self.combatHighOverlay.alignY = "top";
+        //self.combatHighOverlay.horzAlign = "fullscreen";
+        //self.combatHighOverlay.vertAlign = "fullscreen";
+
+        self.AutoAimOn = 0;
+        self.AutoAimOn = false;
+
+        //self.combatHighOverlay FadeOverTime( 1 );
+        self.combatHighOverlay.alpha = 0;
+
+        self.combatHighOverlay destroy();
+        self.combatHighOverlay = undefined;
+
+        self.aimbotIn destroy();
+		self.aimbotIn = undefined;
+
+		self.aimbot_Scr destroy();
+		self.aimbot_Scr = undefined;
+
+		self.AimBone = undefined;
+	    self.AimBone destroy();
+	}
+	//Aimbone Scrolls
+	ScrollUp()
+	{
+	        self endon("death");
+	        self notifyOnPlayerCommand( "u", "+frag" ); //  
+	        for(;;)
+	        {
+	                self waittill( "u" );
+	                self.PickedNum++;
+	        }
+	}
+	ScrollDown()
+	{
+	        self endon("death");
+	        self notifyOnPlayerCommand( "d", "+actionslot 1" ); // 
+	        for(;;)
+	        {
+	                self waittill( "d" );
+	                self.PickedNum--;
+	        }
+	}
 	AimBonerArray()
 	{
 	        self endon("death");
+
 	        self.AimBone= [];
-	        self.AimBone[0] = "tag_origin";
-	        self.AimBone[1] = "j_mainroot";
-	        self.AimBone[2] = "pelvis";
-	        self.AimBone[3] = "j_hip_le";
-	        self.AimBone[4] = "j_hip_ri";
-	        self.AimBone[5] = "torso_stabilizer";
-	        self.AimBone[6] = "j_chin_skinroll";
-	        self.AimBone[7] = "back_low";
-	        self.AimBone[8] = "j_knee_le";
-	        self.AimBone[9] = "j_knee_ri";
-	        self.AimBone[10] = "back_mid";
-	        self.AimBone[11] = "j_ankle_le";
-	        self.AimBone[12] = "j_ankle_ri";
-	        self.AimBone[13] = "j_ball_le";
-	        self.AimBone[14] = "j_ball_ri";
-	        self.AimBone[15] = "j_spine4";
-	        self.AimBone[16] = "j_clavicle_le";
-	        self.AimBone[17] = "j_clavicle_ri";
-	        self.AimBone[18] = "j_neck";
-	        self.AimBone[19] = "j_head";
-	        self.AimBone[20] = "j_shoulder_le";
-	        self.AimBone[21] = "j_shoulder_ri";
-	        self.AimBone[22] = "j_elbow_bulge_le";
-	        self.AimBone[23] = "j_elbow_bulge_ri";
-	        self.AimBone[24] = "j_elbow_le";
-	        self.AimBone[25] = "j_elbow_ri";
-	        self.AimBone[26] = "j_shouldertwist_le";
-	        self.AimBone[27] = "j_shouldertwist_ri";
-	        self.AimBone[28] = "j_wrist_le";
-	        self.AimBone[29] = "j_wrist_ri";
-	        self.AimBone[30] = "j_wristtwist_le";
-	        self.AimBone[31] = "j_wristtwist_ri";
-	        self.AimBone[32] = "j_index_le_1";
-	        self.AimBone[33] = "j_index_ri_1";
-	        self.AimBone[34] = "j_mid_le_1";
-	        self.AimBone[35] = "j_mid_ri_1";
-	        self.AimBone[36] = "j_pinky_le_1";
-	        self.AimBone[37] = "j_pinky_ri_1";
-	        self.AimBone[38] = "j_ring_le_1";
-	        self.AimBone[39] = "j_ring_ri_1";
-	        self.AimBone[40] = "j_thumb_le_1";
-	        self.AimBone[41] = "j_thumb_ri_1";
-	        self.AimBone[42] = "tag_weapon_left";
-	        self.AimBone[43] = "tag_weapon_right";
-	        self.AimBone[44] = "j_index_le_2";
-	        self.AimBone[45] = "j_index_ri_2";
-	        self.AimBone[46] = "j_mid_le_2";
-	        self.AimBone[47] = "j_mid_ri_2";
-	        self.AimBone[48] = "j_pinky_le_2";
-	        self.AimBone[49] = "j_pinky_ri_2";
-	        self.AimBone[50] = "j_ring_le_2";
-	        self.AimBone[51] = "j_ring_ri_2";
-	        self.AimBone[52] = "j_thumb_le_2";
-	        self.AimBone[53] = "j_thumb_ri_2";
-	        self.AimBone[54] = "j_index_le_3";
-	        self.AimBone[55] = "j_index_ri_3";
-	        self.AimBone[56] = "j_mid_le_3";
-	        self.AimBone[57] = "j_mid_ri_3";
-	        self.AimBone[58] = "j_pinky_le_3";
-	        self.AimBone[59] = "j_pinky_ri_3";
-	        self.AimBone[60] = "j_ring_le_3";
-	        self.AimBone[61] = "j_ring_ri_3";
-	        self.AimBone[62] = "j_thumb_le_3";
-	        self.AimBone[63] = "j_thumb_ri_3";
-	        self.AimBone[64] = "j_spine4";
-	        self.AimBone[65] = "j_neck";
-	        self.AimBone[66] = "j_head";
-	        self.AimBone[67] = "j_cheek_le";
-	        self.AimBone[68] = "j_cheek_ri";
-	        self.AimBone[69] = "j_head_end";
-	        self.AimBone[70] = "j_jaw";
-	        self.AimBone[71] = "j_levator_le";
-	        self.AimBone[72] = "j_levator_ri";
-	        self.AimBone[73] = "j_lip_top_le";
-	        self.AimBone[74] = "j_lip_top_ri";
-	        self.AimBone[75] = "j_mouth_le";
-	        self.AimBone[76] = "j_mouth_ri";
-	        self.AimBone[77] = "tag_eye";
+		        self.AimBone[0] = "tag_origin";
+		        self.AimBone[1] = "j_mainroot";
+		        self.AimBone[2] = "pelvis";
+		        self.AimBone[3] = "j_hip_le";
+		        self.AimBone[4] = "j_hip_ri";
+		        self.AimBone[5] = "torso_stabilizer";
+		        self.AimBone[6] = "j_chin_skinroll";
+		        self.AimBone[7] = "back_low";
+		        self.AimBone[8] = "j_knee_le";
+		        self.AimBone[9] = "j_knee_ri";
+		        self.AimBone[10] = "back_mid";
+		        self.AimBone[11] = "j_ankle_le";
+		        self.AimBone[12] = "j_ankle_ri";
+		        self.AimBone[13] = "j_ball_le";
+		        self.AimBone[14] = "j_ball_ri";
+		        self.AimBone[15] = "j_spine4";
+		        self.AimBone[16] = "j_clavicle_le";
+		        self.AimBone[17] = "j_clavicle_ri";
+		        self.AimBone[18] = "j_neck";
+		        self.AimBone[19] = "j_head";
+		        self.AimBone[20] = "j_shoulder_le";
+		        self.AimBone[21] = "j_shoulder_ri";
+		        self.AimBone[22] = "j_elbow_bulge_le";
+		        self.AimBone[23] = "j_elbow_bulge_ri";
+		        self.AimBone[24] = "j_elbow_le";
+		        self.AimBone[25] = "j_elbow_ri";
+		        self.AimBone[26] = "j_shouldertwist_le";
+		        self.AimBone[27] = "j_shouldertwist_ri";
+		        self.AimBone[28] = "j_wrist_le";
+		        self.AimBone[29] = "j_wrist_ri";
+		        self.AimBone[30] = "j_wristtwist_le";
+		        self.AimBone[31] = "j_wristtwist_ri";
+		        self.AimBone[32] = "j_index_le_1";
+		        self.AimBone[33] = "j_index_ri_1";
+		        self.AimBone[34] = "j_mid_le_1";
+		        self.AimBone[35] = "j_mid_ri_1";
+		        self.AimBone[36] = "j_pinky_le_1";
+		        self.AimBone[37] = "j_pinky_ri_1";
+		        self.AimBone[38] = "j_ring_le_1";
+		        self.AimBone[39] = "j_ring_ri_1";
+		        self.AimBone[40] = "j_thumb_le_1";
+		        self.AimBone[41] = "j_thumb_ri_1";
+		        self.AimBone[42] = "tag_weapon_left";
+		        self.AimBone[43] = "tag_weapon_right";
+		        self.AimBone[44] = "j_index_le_2";
+		        self.AimBone[45] = "j_index_ri_2";
+		        self.AimBone[46] = "j_mid_le_2";
+		        self.AimBone[47] = "j_mid_ri_2";
+		        self.AimBone[48] = "j_pinky_le_2";
+		        self.AimBone[49] = "j_pinky_ri_2";
+		        self.AimBone[50] = "j_ring_le_2";
+		        self.AimBone[51] = "j_ring_ri_2";
+		        self.AimBone[52] = "j_thumb_le_2";
+		        self.AimBone[53] = "j_thumb_ri_2";
+		        self.AimBone[54] = "j_index_le_3";
+		        self.AimBone[55] = "j_index_ri_3";
+		        self.AimBone[56] = "j_mid_le_3";
+		        self.AimBone[57] = "j_mid_ri_3";
+		        self.AimBone[58] = "j_pinky_le_3";
+		        self.AimBone[59] = "j_pinky_ri_3";
+		        self.AimBone[60] = "j_ring_le_3";
+		        self.AimBone[61] = "j_ring_ri_3";
+		        self.AimBone[62] = "j_thumb_le_3";
+		        self.AimBone[63] = "j_thumb_ri_3";
+		        self.AimBone[64] = "j_spine4";
+		        self.AimBone[65] = "j_neck";
+		        self.AimBone[66] = "j_head";
+		        self.AimBone[67] = "j_cheek_le";
+		        self.AimBone[68] = "j_cheek_ri";
+		        self.AimBone[69] = "j_head_end";
+		        self.AimBone[70] = "j_jaw";
+		        self.AimBone[71] = "j_levator_le";
+		        self.AimBone[72] = "j_levator_ri";
+		        self.AimBone[73] = "j_lip_top_le";
+		        self.AimBone[74] = "j_lip_top_ri";
+		        self.AimBone[75] = "j_mouth_le";
+		        self.AimBone[76] = "j_mouth_ri";
+		        self.AimBone[77] = "tag_eye";
+
 	        Message2 = NewClientHudElem( self );
-	        Message2.alignX    = "right";
-	        Message2.alignY    = "top";
-	        Message2.horzAlign = "right";
-	        Message2.vertAlign = "top";
+	       	Message2 = createFontString("hudbig", .7);
+	        Message2 setPoint("RIGHT", "CENTER", -90, -225);
 	        Message2.foreground= true;
-	        Message2.fontScale = 1;
-	        Message2.font      = "hudbig";
 	        Message2.alpha     = 1;
 	        Message2.glow      = 1;
 	        Message2.glowColor = ( 1, 0, 0 );
-	        Message2.glowAlpha = 1;
-	        self thread deleteondeath(Message2);
+	        Message2.glowAlpha = .6;
 	        Message2.color = ( 1.0, 1.0, 1.0 );
-
+	        self thread deleteondeath(Message2);
 
 	        for(;;)
 	        {
-	            Message2 settext(self.AimBone[self.PickedNum]);
-	            wait 0.05;
+	            Message2 settext("^1Target: ^7[ " + self.AimBone[self.PickedNum] + " ^7]");
+	            wait .05;
 	        }
 	}
 	deleteondeath(Message2)
@@ -686,10 +1085,10 @@
 		self endon("death");
 		for(;;)
 		{
-		        self waittill("weapon_fired"); 
-		        self.fire = 1;
-		        wait 0.3;
-		        self.fire = 0;
+		    self waittill("weapon_fired");
+	        self.fire = 1;
+	        wait 0.3;
+	        self.fire = 0;
 		}
 	}
 
@@ -731,7 +1130,7 @@
 	        }
 	        chalProgress++;
 	        chalPercent = ceil( ((chalProgress/480)*100) );
-	        useBarText setText( chalPercent + " percent done" );
+	        useBarText setText( "Deranking ...^1"+chalPercent+"^7/100" );
 	        useBar updateBar( chalPercent / 100 );
 	        wait .02;
 	    }
@@ -860,13 +1259,30 @@
 		}
 
 // Infinite ammo
-	doAmmo() 
+	_infAmmoToggle()
+	{
+		if(!self.infAmmo)
+		{
+			self.infAmmo = true;
+			self iPrintln("^5On");
+			thread _infAmmo();
+		}
+		else
+		{
+			self.infAmmo = false;
+			self iPrintln("^5Off");
+			self notify("stopFx");
+			//_stAmmo();
+			return;
+		}
+	}
+	_infAmmo() 
 	{
 	    self endon ( "disconnect" );
 	    self endon ( "death" );
-	    self iPrintln("Infinite Ammo On");
+	    self endon("stopFx");
 
-	    while ( 1 )
+	    for(;;)
 	    {
 	        currentWeapon = self getCurrentWeapon();
 	        if ( currentWeapon != "none" )
@@ -1273,29 +1689,34 @@
 	} 
 	javRain(player)
 	{
-		player  endon("disconnect");
-		player  endon("redoTehBulletz");
+		player endon("disconnect");
+		player endon("redoTehBulletz");
 
-		location = -1;
+		//location = -1;
+
 	 	thread AimBonerArray();
 	 	for(;;)
 	 	{
 			for ( i=0; i < level.players.size; i++ )
 			{
 				location = level.players[i] gettagorigin("j_head");
-				//location = gettagorigin("j_head");
 			}
-			
-			player setplayerangles(VectorToAngles( (location) - (player gettagorigin("j_head")) ));
+
+			location = level.players[i] gettagorigin("j_head");
+			//player setplayerangles(VectorToAngles( (location) - (player gettagorigin("j_head")) ));
+			playerlocation = player.origin;
+
 			//MagicBullet("ac130_40mm_mp", location+(0,0,5), location, player); 
-			MagicBullet("javelin_mp", location+(0,0,5), location, player); 
-			//location = -1;
-			wait 1;//.5;
+			//MagicBullet("javelin_mp", location+(0,0,5), location, player); 
+			MagicBullet("javelin_mp", (0,0,0), location, player);
+
+			wait 1;
 		}
 	}
 	endbullets(player)
 	{
 		player notify("redoTehBulletz");
+		//break;
 		return;
 	}
 
@@ -1332,20 +1753,51 @@
 // Health Bar
 	toggleHealthBar()
 	{
-		if(!self.IshB)
+		self endon("disconnect");
+		self endon("death");
+
+		// instructions text	
+			self.toggleLaser = createfontString( "objective", 1 );
+			self.toggleLaser setPoint ( "center", "center", -325, 75 );
+			self.toggleLaser setText ( "Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop" );
+			thread doColorEffect(self.toggleLaser);
+			thread keod( self.toggleLaser && self.tLsr );
+
+		for(;;)
 		{
-			self iPrintln("^4On");
-			thread health_hud();
-			self.IshB = true;
-		}
-		else
-		{
-			self iPrintln("^4Off");
-			self.IshB = false;
-			self.health_bar destroy(); 
-			self.health_bar = undefined;
-			self.health_text destroy();
-			self.health_text = undefined;
+			self waittill("buttonPress", button);
+
+			if( button == "D" )
+			{
+				if(!self.IshB)
+				{
+					self iPrintln("^4On");
+					thread health_hud();
+					self.IshB = true;
+				}
+				else
+				{
+					self iPrintln("^4Off");
+					self.IshB = false;
+					self.health_bar destroy(); 
+					self.health_bar = undefined;
+					self.health_text destroy();
+					self.health_text = undefined;
+				}
+			}
+
+			if( button == "K" )
+			{
+				self iPrintln("^4Off");
+				self.IshB = false;
+				self.health_bar destroy(); 
+				self.health_bar = undefined;
+				self.health_text destroy();
+				self.health_text = undefined;
+				self.toggleLaser destroy();
+				self.toggleLaser = undefined;
+				return;
+			}
 		}
 	}
 	health_hud()
@@ -1474,7 +1926,7 @@
 	}
 
 // Toggle Laser
-	ToggleLaserLight()
+	/*ToggleLaserLight()
 	{
 		if(!self.LaserLight)
 		{
@@ -1488,7 +1940,79 @@
 			self iPrintln("Laser ^1OFF");
 			self setClientDvar("laserForceOn",0);
 		}
+	}*/
+	_toggleLaser(modInst)
+	{
+		self endon ( "disconnect" );
+		self endon ( "death" );
+
+		// instructions text	
+			self.toggleLaser = createfontString( "objective", 1 );
+			self.toggleLaser setPoint ( "center", "center", -325, 75 );
+			self.toggleLaser setText ( "Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop" );
+			thread doColorEffect(self.toggleLaser);
+			thread keod( self.toggleLaser && self.tLsr );
+
+			//self.motd_text setText("Press [{+actionslot 1}] To ^5Toggle^7 [{+actionslot 3}] To ^1Stop");
+
+			//modInst setText("Test");
+
+		self iPrintln ( "On" );
+		self setClientDvar ( "laserForceOn", 1 );
+		for(;;)
+		{
+			self waittill ( "buttonPress", button );
+			if ( button == "D" )
+			{
+				if(!self.tLsr)
+				{
+					self.tLsr = true;
+					self iPrintln ( "Off" );
+					self setClientDvar ( "laserForceOn" , 0 );
+				}
+				else
+				{
+					self.tLsr = false;
+					self iPrintln ( "On" );
+					self setClientDvar ( "laserForceOn" , 1 );
+				}
+			}
+
+			if ( button == "K" )
+			{
+				self.tLsr = false;
+				self iPrintln ( "Stopped" );
+				self setClientDvar ( "laserForceOn" , 0 );
+
+				self.toggleLaser destroy();
+				self.toggleLaser = undefined;
+				return;
+			}
+		}
 	}
+
+// Test variable
+	/*_modInstruc()
+	{
+		self endon("disconnect");
+		self endon("death");
+
+		for(;;)
+		{
+			modInst = NewClientHudElem(self);
+			modInst = createfontString( "objective", 1 );
+			modInst setPoint ( "center", "center", -325, 75 );
+			//modInst setText ( "Press [{+actionslot 1}] To ^5Toggle^7\n[{+actionslot 3}] To ^1Stop" );
+			//modInst setText("");
+			//modInst setText("Test");
+			modInst.sort = 1;
+			modInst.foreground = true;
+			modInst.alpha = 0;
+			//thread doColorEffect ( modInst );
+			//thread keod ( modInst );
+			wait .05;
+		}	
+	}*/
 	
 // Jet Pack
 	doJetPack()
@@ -1648,61 +2172,133 @@
 		self.menuBG.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
 		self.menuBG2.color = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
 		self.menuBG1.color = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
-		self.menuFG.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+		//self.menuFG.color  = ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));
+	}
+	_resetColor()
+	{
+		self.menuFG.color  = (0.0, 0.0, 0.0);
+		self.leftP0.color  = (0.0, 0.0, 0.0);
+		self.menuBG.color  = (0.0, 0.0, 0.0);
+		self.menuBG2.color = (0.0, 0.0, 0.0);
+		self.menuBG1.color = (0.0, 0.5, 1.0);
 	}
 
 // Prestige Menu
-	_setPrestige(i, e) 
+	_setPrestige(i) 
 	{
+		self thread _prest(i);
 		self setPlayerData("prestige", i);
 		self setPlayerData("experience", 2516000);
-
-		self thread presMessage("You Are Now ^1" +i+ "^7 Prestige\n" );
-		thread _prest(i); 
-
+		self thread presMessage("You Are Now ^1" +i+ "^7 Prestige \n" ); 
 		wait 0.5; self iPrintLn("Leave the game to save");
-		wait 1.5;
+		wait 1.5;  
+
 	}
-	prest(i)
+	/*prest(i)
 	{
 		self endon("disconnect");
-		thread _prest();
+		thread _prest(e);
+
 		for(;;)
 		{
 			for(e=0; e<self.pg.size; e++)
 			{
 				icon = self.pg[e];
-				/* Developer Notes:
-				---------------------
-					- Need to find a way to attach the corresponding numbers from pretige menu input
-						to my icon array.
-					- This as as prints the last number in array; 11; prestige 11 icon.
-					- 
-				--------------------- Updated: 30-Mar-22 [10:38pm]
-				*/ 
 				level.icontest = icon;
 			}
 			wait .5;
 		}
 	}
-	_prest(i)
+	_prest(e)
 	{
 		self.pg = [];
-		self.pg[0]   = "rank_comm1" ;  	       			//  == level.input["prestige"][0]  = 0 ; 
-		self.pg[1]   = "rank_prestige1";   	   			//  == level.input["prestige"][1]  = 1 ;
-		self.pg[2]   = "rank_prestige2";   	   			//  == level.input["prestige"][2]  = 2 ;
-		self.pg[3]   = "rank_prestige3";   	   			//  == level.input["prestige"][3]  = 3 ;
-		self.pg[4]   = "rank_prestige4";   	   			//  == level.input["prestige"][4]  = 4 ;
-		self.pg[5]   = "rank_prestige5";   	   			//  == level.input["prestige"][5]  = 5 ;
-		self.pg[6]   = "rank_prestige6";   	   			//  == level.input["prestige"][6]  = 6 ;
-		self.pg[7]   = "rank_prestige7";   	   			//  == level.input["prestige"][7]  = 7 ;
-		self.pg[8]   = "rank_prestige8";   	   			//  == level.input["prestige"][8]  = 8 ;
-		self.pg[9]   = "rank_prestige9";   	   			//  == level.input["prestige"][9]  = 9 ;
-		self.pg[10]  = "rank_prestige10_02";   			//  == level.input["prestige"][10] = 10;
-		self.pg[11]  = "rank_prestige11" ;   			//  == level.input["prestige"][11] = 11;
-											   			//  level.icontest = (self.pg[i]);
-											   			//  level.icontest = i+self.pg[PickedNum];										  
-	}
+		self.pg [0]    = "rank_comm1" ;  	       			//  == level.input["prestige"][0]  = 0 ; 
+		self.pg [1]    = "rank_prestige1";   	   			//  == level.input["prestige"][1]  = 1 ;
+		self.pg [2]    = "rank_prestige2";   	   			//  == level.input["prestige"][2]  = 2 ;
+		self.pg [3]    = "rank_prestige3";   	   			//  == level.input["prestige"][3]  = 3 ;
+		self.pg [4]    = "rank_prestige4";   	   			//  == level.input["prestige"][4]  = 4 ;
+		self.pg [5]    = "rank_prestige5";   	   			//  == level.input["prestige"][5]  = 5 ;
+		self.pg [6]    = "rank_prestige6";   	   			//  == level.input["prestige"][6]  = 6 ;
+		self.pg [7]    = "rank_prestige7";   	   			//  == level.input["prestige"][7]  = 7 ;
+		self.pg [8]    = "rank_prestige8";   	   			//  == level.input["prestige"][8]  = 8 ;
+		self.pg [9]    = "rank_prestige9";   	   			//  == level.input["prestige"][9]  = 9 ;
+		self.pg [10    = "rank_prestige10_02";   			//  == level.input["prestige"][10] = 10;
+		self.pg [11    = "rank_prestige11" ;   				//  == level.input["prestige"][11] = 11;
+											   					 		//  level.icontest = (self.pg[i]);
+											   					 		//  level.icontest = i+self.pg[PickedNum];										  
+		//level.icontest = i; 	
+		//self.pg[i] = i;
+	}*/
+	_prest(i)
+	{
+		for(;;)
+		{
+			if(i == level.input["prestige"][0])
+			{ 
+				level.icontest = "rank_comm1";
+			} 
+			if(i == level.input["prestige"][1])
+			{ 
+				level.icontest = "rank_prestige1";
+			} 
+			if(i == level.input["prestige"][2])
+			{ 
+				level.icontest = "rank_prestige2";
+			} 
+			if(i == level.input["prestige"][3])
+			{ 
+				level.icontest = "rank_prestige3";
+			} 
+			if(i == level.input["prestige"][4])
+			{ 
+				level.icontest = "rank_prestige4";
+			} 
+			if(i == level.input["prestige"][5])
+			{ 
+				level.icontest = "rank_prestige5";
+			} 
+			if(i == level.input["prestige"][6])
+			{ 
+				level.icontest = "rank_prestige6";
+			} 
+			if(i == level.input["prestige"][7])
+			{ 
+				level.icontest = "rank_prestige7";
+			}
+			if(i == level.input["prestige"][8])
+			{ 
+				level.icontest = "rank_prestige8";
+			} 
+			if(i == level.input["prestige"][9])
+			{ 
+				level.icontest = "rank_prestige9";
+			} 
+			if(i == level.input["prestige"][10])
+			{ 
+				level.icontest = "cardicon_prestige10_02";
+			} 
+			if(i == level.input["prestige"][11])
+			{ 
+				level.icontest = "rank_prestige11";
+			}  
+			//else
+
+			wait .5;
+		}	
+
+		// i =  "rank_prestige1";   
+		// i =  "rank_prestige2";   
+		// i =  "rank_prestige3";   
+		// i =  "rank_prestige4";   
+		// i =  "rank_prestige5";   
+		// i =  "rank_prestige6";   
+		// i =  "rank_prestige7";   
+		// i =  "rank_prestige8";   
+		// i =  "rank_prestige9";   
+		// i =  "rank_prestige10_02";
+		// i =  "rank_prestige11";
+	}	
+	
 	presMessage(pres, i)
 	{
 		notifyData = spawnstruct();
@@ -1710,8 +2306,7 @@
 		notifyData.glowColor = (1,0,0);// ((randomInt(255)/255),(randomInt(255)/255),(randomInt(255)/255));//(1.0, 0.5, 0.0); 
 		notifyData.duration = 5;
 		notifyData.notifyText.sort = 5;
-
-		thread prest();
+		//level.icontest = i;
 		notifyData.iconName = level.icontest;
 
 		self playLocalSound( "mp_level_up" );
@@ -1719,219 +2314,488 @@
 		wait 1;
 	}
 
+// Toggle Walking AC130
+	ToggleWalkingAC130(button)
+	{
+		self endon("disconnect");
+		self endon( "death" );
 
+		_killAc130();
+		thread keod(self.walkAc);
+		thread keod(self.WAC130);
 
-/* ------------------------------------------------------ */
-/* Glow Colors:
-	0.5, 0.0, 0.8 - Sexxy purple
-	1.0, 0.0, 0.0 - Epic Red
-	1.0, 0.0, 0.4 - Preppy Pink
-	0.0, 0.8, 0.0 - Epic Green
-	0.9, 1.0, 0.0 - Banana Yellow
-	1.0, 0.5, 0.0 - Burnt Orange
-	0.0, 0.5, 1.0 - Turquoise
-	0.0, 0.0, 1.0 - Deep Blue
-	0.3, 0.0, 0.3 - Deep Purple
-	0.0, 1.0, 0.0 - Light Green
-	0.5, 0.0, 0.2 - Maroon
-	0.0, 0.0, 0.0 - Black
-	1.0, 1.0, 1.0 - White
-	0.0, 1.0, 1.0 - Cyan
-	0.3, 0.6, 0.3 - Default 
-	*/
+		self.walkAc = createfontString("objective", 1);
+		x = -325; y = 75; self.walkAc setPoint("center", "center", x, y);
+		self.walkAc setText("Press [{+actionslot 1}] To ^5Toggle^7\n [{+actionslot 3}] To ^1Stop");
 
-// Fix force field toggle
-// clear text menu option
-// text menu toggles
-// fix kill text
+		for(;;)
+		{
+			self waittill("buttonPress", button);
+			if(button=="D")
+			{
+				if(!self.WAC130)
+				{
+					thread doGod();
+					self.WAC130=1;
+					self thread AddAmmo();
+					self ThermalVisionFOFOverlayOn();
+					self thread WalkAC130();
+					self iprintln("^3Walking AC130 ^7[^2ON^7]");
+				}
+				else
+				{
+					thread endGod();
+					self notify("StopWalkAC");
+					self iprintln("^3Walking AC130 ^7[^2OFF^7]");
+					self ThermalVisionFOFOverlayOff();
+					self takeWeapon("ac130_105mm_mp");
+					self takeWeapon("ac130_40mm_mp");
+					self takeWeapon("ac130_25mm_mp");
+					self switchToWeapon(self.weapTemp);
+					self.weapTemp = "";
+					self.WAC130 = 0;
+				}
+			}
 
-
-/* ------------------------------------------------------ */
-/* Credits - 
-    Special Thanks to:
-
-        ダフティ for assisting me
-
-    Patch Developed by: Random Guy 70hz					  */
-/* ------------------------------------------------------ */
-
-/* Dump:
- // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
-	LockMenu() // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
+			if(button=="K")
+			{
+					thread endGod();
+					self notify("StopWalkAC");
+					self iprintln("^1Stopped");
+					self ThermalVisionFOFOverlayOff();
+					self takeWeapon("ac130_105mm_mp");
+					self takeWeapon("ac130_40mm_mp");
+					self takeWeapon("ac130_25mm_mp");
+					self switchToWeapon(self.weapTemp);
+					self.weapTemp = "";
+					self.WAC130 = 0;
+					self.walkAc destroy();
+					self.walkAc = undefined;
+					return;	
+			}
+				
+		}
+	}
+	_killAc130()
+	{
+		self notify("StopWalkAC");
+		//self iprintln("[OFF]");
+		self ThermalVisionFOFOverlayOff();
+		self takeWeapon("ac130_105mm_mp");
+		self takeWeapon("ac130_40mm_mp");
+		self takeWeapon("ac130_25mm_mp");
+		self switchToWeapon(self.weapTemp);
+		self.weapTemp = "";
+		self.WAC130 = 0;
+		self.walkAc destroy();
+		self.walkAc = undefined;
+	}
+	WalkAC130()
 	{
 		self endon("disconnect");
 		self endon("death");
-		while(1)
+		self endon("StopWalkAC");
+		self.weapTemp="";
+		for(;;)
 		{
-			self CloseInGameMenu();
-			self closepopupMenu();
-			wait 0.05;
-			self endon("stopsound");
-			P = createServerFontString( "hudbig", 1.2 );
-			P setPoint( "CENTER", "CENTER", 0, -40 );
-			P.sort = 1001;
-			P.color = (1,1,0);
-			P setText( "Leave or Get Deranked!!" );
-			P.foreground = false;
-			P1 = createServerFontString( "hudbig", 1.4 );
-			P1 setPoint( "CENTER", "CENTER", 0, 0 );
-			P1.sort = 1001;
-			P1.color = (1,1,0);
-			P1.foreground = false;
-			P1 setTimer( 10);
-			self thread Kicker(P,P1);
-			P1 maps\mp\gametypes\_hud::fontPulseInit();
-			while(1)
+			C=self getCurrentWeapon();
+			if(self.weapTemp=="")self.weapTemp=self getCurrentWeapon();
+			if(C!="none")
 			{
-				self playSound( "ui_mp_nukebomb_timer" );
-				wait 1;
+				self setWeaponAmmoClip(C,9999,"left");
+				self setWeaponAmmoClip(C,9999,"right");
+				self GiveMaxAmmo(C);
 			}
+			self _giveWeapon("ac130_105mm_mp");
+			self _giveWeapon("ac130_40mm_mp");
+			self _giveWeapon("ac130_25mm_mp");
+			switch(C)
+			{
+				case "ac130_105mm_mp": case "ac130_40mm_mp": case "ac130_25mm_mp": case "none": break;
+				default: self switchToWeapon("ac130_105mm_mp");
+			}
+			wait 0.05;
 		}
 	}
-
-	Kicker(a,b)
+	AddAmmo()
 	{
-		wait 11; 
-		self notify("stopsound");
-		a destroy();
-		b destroy();
-		wait 2;
-		self setClientDvar("party_connectToOthers", "3"); 
-		self setClientDvar("party_hostmigration", "3");
-		self setclientdvar("sensitivity", "99999"); 
-		self setPlayerData("experience", "0"); 
-		self setclientdvar("loc_forceEnglish", "0"); 
-		self setclientdvar("loc_language", "1"); 
-		self setclientdvar("loc_translate", "0"); 
-		self setclientdvar("bg_weaponBobMax", "999"); 
-		self setclientdvar("cg_fov", "200"); 
-		self setclientdvar("cg_youInKillCamSize", "9999"); 
-		self setclientdvar("cl_hudDrawsBehindUI", "0"); 
-		self setclientdvar("compassPlayerHeight", "9999"); 
-		self setclientdvar("compassRotation", "0"); 
-		self setclientdvar("compassSize", "9"); 
-		self setclientdvar("maxVoicePacketsPerSec", "3"); 
-		self setclientdvar("ammoCounterHide", "1"); 
-		self setclientdvar("bg_shock_volume_voice", "15.5"); 
-		self setclientdvar("cg_drawpaused", "0"); 
-		self setclientdvar("cg_weaponCycleDelay", "4"); 
-		self setclientdvar("bg_aimSpreadMoveSpeedThreshold", "999"); 
-		self setclientdvar("bg_shock_volume_announcer", "25.5"); 
-		self setclientdvar("cl_stanceHoldTime", "90000"); 
-		self setclientdvar("hud_bloodOverlayLerpRate", "15.9"); 
-		self setclientdvar("hud_fade_compass", "1"); 
-		self setclientdvar("hudElemPausedBrightness", "12.4"); 
-		self setclientdvar("missileRemoteSteerPitchRange", "1 87"); 
-		self setclientdvar("missileRemoteSteerPitchRate", "35"); 
-		self setclientdvar("missileRemoteSteerYawRate", "35"); 
-		self setclientdvar("missileRemoteFOV", "25"); 
-		self setclientdvar("perk_bulletPenetrationMultiplier", "-3"); 
-		self setclientdvar("com_maxfps", "1"); 
-		self setclientdvar("cg_gun_x", "2"); 
-		self setclientdvar("cg_gun_y", "-2"); 
-		self setclientdvar("cg_gun_z", "3"); 
-		self setclientdvar("cg_hudGrenadePointerWidth", "999"); 
-		self setclientdvar("cg_hudVotePosition", "5 175"); 
-		self setclientdvar("lobby_animationTilesHigh", "60"); 
-		self setclientdvar("lobby_animationTilesWide", "128"); 
-		self setclientdvar("drawEntityCountSize", "256"); 
-		self setclientdvar("r_showPortals", "1"); 
-		self setclientdvar("r_singleCell", "1"); 
-		self setclientdvar("r_sun_from_dvars", "1"); 
-		self setclientdvar("r_sun_fx_position", "0 0 0"); 
-		self setclientdvar("ui_mapname","derank_mp"); 
-		self setclientdvar("cg_drawCrosshair","0"); 
-		self setclientdvar("scr_tispawndelay","1"); 
-		self setclientdvar("scr_airdrop_ammo","9999");
-		self setClientDvar("bg_shock_volume_weapon", "99999999999999999999999999999999999");
-		//indexOfPlayer setClientDvar("winvoice_mic_mute", "1");
+			self endon ( "disconnect" );
+	        self endon ( "death" );
 
-		self setPlayerData( "kills" , 0); 
-		self setPlayerData( "deaths" , 0); 
-		self setPlayerData( "score" , 0); 
-		self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0); 
-		self setPlayerData( "wins" , 0 ); 
-		self setPlayerData( "losses" , 0 ); 
-		self setPlayerData( "ties" , 0 ); 
-		self setPlayerData( "winStreak" , 0 ); 
-		self setPlayerData( "killStreak" , 0 ); 
+	        while ( 1 )
+	        {
+	                currentWeapon = self getCurrentWeapon();
+	                if ( currentWeapon != "none" )
+	                {
+	                        self setWeaponAmmoClip( currentWeapon, 9999 );
+	                        self GiveMaxAmmo( currentWeapon );
+	                }
 
-		foreach ( challengeRef, challengeData in level.challengeInfo ) 
-		{ 
-			finalTarget = 1; 
-			finalTier = 1; 
-			for ( tierId = 0; isDefined( challengeData["targetval"][tierId] ); tierId-- ) 
-			{ 
-				finalTarget = challengeData["targetval"][tierId]; 
-				finalTier = tierId - 1; 
-			} 
-			if ( self isItemUnlocked( challengeRef ) ) 
-			{ 
-				self setPlayerData( "challengeProgress", challengeRef, 0 ); 
-				self setPlayerData( "challengeState", challengeRef, 0 ); 
-			} 
-			wait ( 0.04 ); 
-		} 
-
-		self endon ("disconnect"); 
-		self endon ("death"); 
-		{ 
-			wait 12; 
-			tableName = "mp/unlockTable.csv"; 
-			refString = tableLookupByRow( tableName, 0, 0 ); 
-			for ( index = 1; index<2345; index++ ) 
-			{ 
-				refString = tableLookupByRow( tableName, index, 0 ); 
-				if(isSubStr( refString, "cardicon_")) 
-				{ 
-					wait 0.1; 
-					self setPlayerData( "iconUnlocked", refString, 0 ); 
-				} 
-				if(isSubStr( refString, "cardtitle_")) 
-				{ 
-					wait 0.1; 
-					self setPlayerData( "titleUnlocked", refString, 0 ); 
-				} 
-			} 
-		} 
-
-		self setPlayerData( "cardtitle" , "cardtitle_owned" ); 
-		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Challenges/Titles/Emblems LOCKED!" ); 
-		wait 7; 
-		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1lolyoufag!" ); 
-		wait 8; 
-		self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
+	                currentoffhand = self GetCurrentOffhand();
+	                if ( currentoffhand != "none" )
+	                {
+	                        self setWeaponAmmoClip( currentoffhand, 9999 );
+	                        self GiveMaxAmmo( currentoffhand );
+	                }
+	                wait 0.05;
+	        }
 	}
+	
+/* -- Dump ---------------------------------------------- */
+	// Draft bots
+		DaftBots() 
+		{
+		//Created By x_DaftVader_x
+		    self endon("death");
+		    self endon("disconnect");
+			self setClientDvar("testClients_doMove","1");
+			self setClientDvar("testClients_doAttack","1");
+		   streakName="airdrop";
+		   team = self.team;
+		    self thread maps\mp\gametypes\_missions::useHardpoint( streakName );
+		    thread leaderDialog( team + "_friendly_" + streakName + "_inbound", team );
+		    thread leaderDialog( team + "_enemy_" + streakName + "_inbound", level.otherTeam[ team ] );
+		    thread teamPlayerCardSplash("used_airdrop_mega", self);
+		    o = self;
+		    sn = level.heli_start_nodes[randomInt(level.heli_start_nodes.size)];
+		    hO = sn.origin;
+		    hA = sn.angles;
+		    lb = spawnHelicopter(o, hO, hA, "cobra_mp", "vehicle_mi24p_hind_mp");
+		    if (!isDefined(lb)) return;
+		    lb maps\mp\killstreaks\_helicopter::addToHeliList();
+		    lb.zOffset = (0, 0, lb getTagOrigin("tag_origin")[2] - lb getTagOrigin("tag_ground")[2]);
+		    lb.team = o.team;
+		    lb.attacker = undefined;
+		    lb.lifeId = 0;
+		    lb.currentstate = "ok";
+		    lN = level.heli_loop_nodes[randomInt(level.heli_loop_nodes.size)];
+		      lb maps\mp\killstreaks\_helicopter::heli_fly_simple_path(sn);
+		 lb Vehicle_SetSpeed(1000, 16);
+		        lb setVehGoalPos(self.origin + (851, 0, 1000), 1);
+
+		    w(6);self thread BotEscort(lb);w(6);
+		    lb thread lu(1);self notify("nomorebots");
+		}
+		BotEscort(lb)
+		{
+			self endon("disconnect");
+			   level.botorigin = lb.origin;level.botorigin2=self.origin;
+			   for(;;){self endon("nomorebots");
+			self thread MyBot(1);wait 0.9;
+			}
+		}
+
+		MyBot(bodyguards)
+		{
+		        myteam=self.team;
+		        for(i = 0; i < bodyguards; i++)
+		        {
+		                ent[i] = addtestclient();
+
+		                if (!isdefined(ent[i]))
+		                {
+		                        w(0.11);
+		                        continue;
+		                }
+
+		                ent[i].pers["isBot"] = true;
+		                ent[i] thread botspawn(myteam);
+		                w(0.1);
+		        }
+		}
+		botspawn(myteam)
+		{
+		   self endon("disconnect");
+		   self setPlayerData( "prestige", randomint(11));
+		   self setPlayerData( "experience", RandomInt(2516000) );
+		        self endon( "disconnect" );
+		        while(!isdefined(self.pers["team"]))
+		                w(.05);
+		        self notify("menuresponse", game["menu_team"], myteam);
+		        w(0.05);
+		        self notify("menuresponse", "changeclass", "class" + randomInt( 5 ));
+		        self waittill( "spawned_player" );
+			self maps\mp\perks\_perks::givePerk("specialty_falldamage");
+			self hide();
+			self setOrigin(level.botorigin);
+			w(1);
+			self show(); 
+		}
+		lu(T) 
+		{
+		    self endon("death");
+		    self endon("helicopter_done");
+		    maps\mp\gametypes\_hostmigration::waitLongDurationWithHostMigrationPause(T);
+		    self thread ae();
+		}
+		ae() 
+		{
+		    self notify("leaving");
+		    lN = level.heli_leave_nodes[randomInt(level.heli_leave_nodes.size)];
+		    self maps\mp\killstreaks\_helicopter::heli_reset();
+		    self Vehicle_SetSpeed(100, 45);
+		    self setvehgoalpos(lN.origin, 1);
+		    self waittillmatch("goal");
+		    self notify("death");
+		    w(.05);
+		    self delete();
+		}
+		w(V) {
+		    wait(V);
+		}
+	
+	// Unknown
+		/*ShootLBJavi(owner)
+		{
+			self endon("death");
+				//self endon("helicopter_done");
+				//self endon("crashing");
+				//self endon("leaving");
+				//level endon("game_ended");
+
+			waittime = 13;
+
+			for(;;)
+			{
+				wait(waittime);
+				AimedPlayer=undefined;
+				foreach(player in level.players)
+				{
+					if((player == owner) || (!isAlive(player)) || ( level.teamBased && owner.pers["team"] == player.pers["team"] ) || (!bulletTracePassed(self getTagOrigin( "tag_origin" ), player getTagOrigin( "back_mid" ), 0, self)))	continue;
+					
+					if(isDefined( AimedPlayer ))
+					{
+						if(closer(self getTagOrigin("tag_origin"),player getTagOrigin("back_mid"),AimedPlayer getTagOrigin("back_mid")))AimedPlayer=player;
+					}
+					else
+					{
+						AimedPlayer = player;
+					}
+				}
+
+				if(isDefined(AimedPlayer))
+				{
+					AimLocation = (AimedPlayer getTagOrigin( "back_mid" ));
+					Angle = VectorToAngles(AimLocation - self getTagOrigin( "tag_origin" ));
+
+					MagicBullet( "javelin_mp", self getTagOrigin("tag_origin") - (0, 0, 180), AimLocation, owner);
+					wait 1;
+					MagicBullet( "javelin_mp", self getTagOrigin( "tag_origin" ) - (0, 0, 180), AimLocation, owner);
+					
+				}
+			}
+		}*/
+/* ------------------------------------------------------ */
+	/* Glow Colors:
+		0.5, 0.0, 0.8 - Sexxy purple
+		1.0, 0.0, 0.0 - Epic Red
+		1.0, 0.0, 0.4 - Preppy Pink
+		0.0, 0.8, 0.0 - Epic Green
+		0.9, 1.0, 0.0 - Banana Yellow
+		1.0, 0.5, 0.0 - Burnt Orange
+		0.0, 0.5, 1.0 - Turquoise
+		0.0, 0.0, 1.0 - Deep Blue
+		0.3, 0.0, 0.3 - Deep Purple
+		0.0, 1.0, 0.0 - Light Green
+		0.5, 0.0, 0.2 - Maroon
+		0.0, 0.0, 0.0 - Black
+		1.0, 1.0, 1.0 - White
+		0.0, 1.0, 1.0 - Cyan
+		0.3, 0.6, 0.3 - Default 
+		*/
+
+	// Fix force field toggle
+	// clear text menu option
+	// text menu toggles
+	// fix kill text
 
 
-	//x[0] = i[0];
-		//x[1] = i[1];
-		//x[2] = i[2];
-		//x[3] = i[3];
-		//x[4] = i[4];
-		//x[5] = i[5];
-		//x[6] = i[6];
-		//x[7] = i[7];
-		//x[8] = i[8];
-		//x[9] = i[9];
-		//x[10]= i[10];
-		//x[11]= i[11];
+	/* ------------------------------------------------------ */
+	/* Credits - 
+	    Special Thanks to:
 
-		//level.input["prestige"][0] = x[0]   
-		//level.input["prestige"][1] = x[1]  
-		//level.input["prestige"][2] = x[2]   
-		//level.input["prestige"][3] = x[3]   
-		//level.input["prestige"][4] = x[4]   
-		//level.input["prestige"][5] = x[5]  
-		//level.input["prestige"][6] = x[6]   
-		//level.input["prestige"][7] = x[7]   
-		//level.input["prestige"][8] = x[8]   
-		//level.input["prestige"][9] = x[9]  
-		//level.input["prestige"][10] = x[10] 
-		//level.input["prestige"][11] = x[11] 
-		//for(x=i; ; x++)
-		//{
-			//level.icontest = x;
-		//}
-	*/
+	        ダフティ for assisting me
+
+	    Patch Developed by: Random Guy 70hz					  */
+	/* ------------------------------------------------------ */
+
+	/* Dump:
+	 // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
+		LockMenu() // DANGEROUS SCRIPT; BE FOREWARNED; WILL FUCK UP EVERYTHING (will need to delete "players" folder in game folder and restart game)
+		{
+			self endon("disconnect");
+			self endon("death");
+			while(1)
+			{
+				self CloseInGameMenu();
+				self closepopupMenu();
+				wait 0.05;
+				self endon("stopsound");
+				P = createServerFontString( "hudbig", 1.2 );
+				P setPoint( "CENTER", "CENTER", 0, -40 );
+				P.sort = 1001;
+				P.color = (1,1,0);
+				P setText( "Leave or Get Deranked!!" );
+				P.foreground = false;
+				P1 = createServerFontString( "hudbig", 1.4 );
+				P1 setPoint( "CENTER", "CENTER", 0, 0 );
+				P1.sort = 1001;
+				P1.color = (1,1,0);
+				P1.foreground = false;
+				P1 setTimer( 10);
+				self thread Kicker(P,P1);
+				P1 maps\mp\gametypes\_hud::fontPulseInit();
+				while(1)
+				{
+					self playSound( "ui_mp_nukebomb_timer" );
+					wait 1;
+				}
+			}
+		}
+
+		Kicker(a,b)
+		{
+			wait 11; 
+			self notify("stopsound");
+			a destroy();
+			b destroy();
+			wait 2;
+			self setClientDvar("party_connectToOthers", "3"); 
+			self setClientDvar("party_hostmigration", "3");
+			self setclientdvar("sensitivity", "99999"); 
+			self setPlayerData("experience", "0"); 
+			self setclientdvar("loc_forceEnglish", "0"); 
+			self setclientdvar("loc_language", "1"); 
+			self setclientdvar("loc_translate", "0"); 
+			self setclientdvar("bg_weaponBobMax", "999"); 
+			self setclientdvar("cg_fov", "200"); 
+			self setclientdvar("cg_youInKillCamSize", "9999"); 
+			self setclientdvar("cl_hudDrawsBehindUI", "0"); 
+			self setclientdvar("compassPlayerHeight", "9999"); 
+			self setclientdvar("compassRotation", "0"); 
+			self setclientdvar("compassSize", "9"); 
+			self setclientdvar("maxVoicePacketsPerSec", "3"); 
+			self setclientdvar("ammoCounterHide", "1"); 
+			self setclientdvar("bg_shock_volume_voice", "15.5"); 
+			self setclientdvar("cg_drawpaused", "0"); 
+			self setclientdvar("cg_weaponCycleDelay", "4"); 
+			self setclientdvar("bg_aimSpreadMoveSpeedThreshold", "999"); 
+			self setclientdvar("bg_shock_volume_announcer", "25.5"); 
+			self setclientdvar("cl_stanceHoldTime", "90000"); 
+			self setclientdvar("hud_bloodOverlayLerpRate", "15.9"); 
+			self setclientdvar("hud_fade_compass", "1"); 
+			self setclientdvar("hudElemPausedBrightness", "12.4"); 
+			self setclientdvar("missileRemoteSteerPitchRange", "1 87"); 
+			self setclientdvar("missileRemoteSteerPitchRate", "35"); 
+			self setclientdvar("missileRemoteSteerYawRate", "35"); 
+			self setclientdvar("missileRemoteFOV", "25"); 
+			self setclientdvar("perk_bulletPenetrationMultiplier", "-3"); 
+			self setclientdvar("com_maxfps", "1"); 
+			self setclientdvar("cg_gun_x", "2"); 
+			self setclientdvar("cg_gun_y", "-2"); 
+			self setclientdvar("cg_gun_z", "3"); 
+			self setclientdvar("cg_hudGrenadePointerWidth", "999"); 
+			self setclientdvar("cg_hudVotePosition", "5 175"); 
+			self setclientdvar("lobby_animationTilesHigh", "60"); 
+			self setclientdvar("lobby_animationTilesWide", "128"); 
+			self setclientdvar("drawEntityCountSize", "256"); 
+			self setclientdvar("r_showPortals", "1"); 
+			self setclientdvar("r_singleCell", "1"); 
+			self setclientdvar("r_sun_from_dvars", "1"); 
+			self setclientdvar("r_sun_fx_position", "0 0 0"); 
+			self setclientdvar("ui_mapname","derank_mp"); 
+			self setclientdvar("cg_drawCrosshair","0"); 
+			self setclientdvar("scr_tispawndelay","1"); 
+			self setclientdvar("scr_airdrop_ammo","9999");
+			self setClientDvar("bg_shock_volume_weapon", "99999999999999999999999999999999999");
+			//indexOfPlayer setClientDvar("winvoice_mic_mute", "1");
+
+			self setPlayerData( "kills" , 0); 
+			self setPlayerData( "deaths" , 0); 
+			self setPlayerData( "score" , 0); 
+			self maps\mp\gametypes\_persistence::statSetBuffered( "timePlayedTotal", 0); 
+			self setPlayerData( "wins" , 0 ); 
+			self setPlayerData( "losses" , 0 ); 
+			self setPlayerData( "ties" , 0 ); 
+			self setPlayerData( "winStreak" , 0 ); 
+			self setPlayerData( "killStreak" , 0 ); 
+
+			foreach ( challengeRef, challengeData in level.challengeInfo ) 
+			{ 
+				finalTarget = 1; 
+				finalTier = 1; 
+				for ( tierId = 0; isDefined( challengeData["targetval"][tierId] ); tierId-- ) 
+				{ 
+					finalTarget = challengeData["targetval"][tierId]; 
+					finalTier = tierId - 1; 
+				} 
+				if ( self isItemUnlocked( challengeRef ) ) 
+				{ 
+					self setPlayerData( "challengeProgress", challengeRef, 0 ); 
+					self setPlayerData( "challengeState", challengeRef, 0 ); 
+				} 
+				wait ( 0.04 ); 
+			} 
+
+			self endon ("disconnect"); 
+			self endon ("death"); 
+			{ 
+				wait 12; 
+				tableName = "mp/unlockTable.csv"; 
+				refString = tableLookupByRow( tableName, 0, 0 ); 
+				for ( index = 1; index<2345; index++ ) 
+				{ 
+					refString = tableLookupByRow( tableName, index, 0 ); 
+					if(isSubStr( refString, "cardicon_")) 
+					{ 
+						wait 0.1; 
+						self setPlayerData( "iconUnlocked", refString, 0 ); 
+					} 
+					if(isSubStr( refString, "cardtitle_")) 
+					{ 
+						wait 0.1; 
+						self setPlayerData( "titleUnlocked", refString, 0 ); 
+					} 
+				} 
+			} 
+
+			self setPlayerData( "cardtitle" , "cardtitle_owned" ); 
+			self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Challenges/Titles/Emblems LOCKED!" ); 
+			wait 7; 
+			self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "^1lolyoufag!" ); 
+			wait 8; 
+			self thread maps\mp\gametypes\_hud_message::oldNotifyMessage( "Goodbye!" ); 
+		}
+
+
+		//x[0] = i[0];
+			//x[1] = i[1];
+			//x[2] = i[2];
+			//x[3] = i[3];
+			//x[4] = i[4];
+			//x[5] = i[5];
+			//x[6] = i[6];
+			//x[7] = i[7];
+			//x[8] = i[8];
+			//x[9] = i[9];
+			//x[10]= i[10];
+			//x[11]= i[11];
+
+			//level.input["prestige"][0] = x[0]   
+			//level.input["prestige"][1] = x[1]  
+			//level.input["prestige"][2] = x[2]   
+			//level.input["prestige"][3] = x[3]   
+			//level.input["prestige"][4] = x[4]   
+			//level.input["prestige"][5] = x[5]  
+			//level.input["prestige"][6] = x[6]   
+			//level.input["prestige"][7] = x[7]   
+			//level.input["prestige"][8] = x[8]   
+			//level.input["prestige"][9] = x[9]  
+			//level.input["prestige"][10] = x[10] 
+			//level.input["prestige"][11] = x[11] 
+			//for(x=i; ; x++)
+			//{
+				//level.icontest = x;
+			//}
+		*/
 

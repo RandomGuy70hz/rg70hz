@@ -11,18 +11,42 @@
 
 
 // hud util functions
-easyColor( r, g, b )
-{
-	// awesome function
-		return (r/255, g/255, b/255);
-}
+	
+// easy functions
+	easyColor( r, g, b )
+	{
+		// awesome function
+			return (r/255, g/255, b/255);
+	}
+	/*easyCutHeight(height)
+	{
+		return height/2;
+	}
+	easyCutWidth(width)
+	{
+		return width/2;
+	}*/
 
 KillText()
 {
     self endon ("disconnect");
     self waittill ( "death" );
+
     self.motd_text destroy();
     self.motd_text = undefined;
+
+	// left panel
+		//self.leftP0        destroy();	self.leftP0        = undefined;  //self.leftP0.alpha        = 0;
+		//self.leftP0_top    destroy();	self.leftP0_top    = undefined;  //self.leftP0_top.alpha    = 0;
+		//self.leftP0_bottom destroy();	self.leftP0_bottom = undefined;	 //self.leftP0_bottom.alpha = 0;
+		//self.leftP0_left   destroy();	self.leftP0_left   = undefined;  //self.leftP0_left.alpha   = 0;
+		//self.leftP0_right  destroy();	self.leftP0_right  = undefined;  //self.leftP0_right.alpha  = 0;
+
+	//self.combatHighOverlay destroy();
+    //self.combatHighOverlay = undefined;
+
+    //self.aimbotIn destroy();
+	//self.aimbotIn = undefined;
 }
 
 myMessage( hintText )
@@ -37,7 +61,7 @@ myMessage( hintText )
 	self playLocalSound( "mp_level_up" );
 }
 
- 
+  
 /* ------------------------------------------------------ */
 /* Glow Colors:
 	0.5, 0.0, 0.8 - Sexxy purple
