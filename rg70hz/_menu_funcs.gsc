@@ -34,7 +34,7 @@
 				self thread _pretigeMenu();
 				self thread _host();
 				self thread _admin();
-				self thread _playerMenu();
+				//self thread _playerMenu();
 			} 
 
 		// menus
@@ -50,7 +50,7 @@
 						{
 							level.names["main"][4] = "Host";
 							level.names["main"][5] = "Admin";
-							level.names["main"][6] = "Players [^1"+level.players.size+"^7]";
+							//level.names["main"][6] = "Players [^1"+level.players.size+"^7]";
 							//level.names["main"][7] = "Visions";
 						}
 
@@ -61,7 +61,7 @@
 							level.funcs["main"][3] = ::menuOpen;
 							level.funcs["main"][4] = ::menuOpen;
 							level.funcs["main"][5] = ::menuOpen; // player menu
-							level.funcs["main"][6] = ::menuOpen;
+							//level.funcs["main"][6] = ::menuOpen;
 							//level.funcs["main"][7] = ::menuOpen;
 					level.input["main"] = [];
 							level.input["main"][0] = "sub3|main";      // account menu
@@ -70,7 +70,7 @@
 							level.input["main"][3] = "prestige|main";  // prestige menu
 							level.input["main"][4] = "sub1|main";      // host menu
 							level.input["main"][5] = "admin|main";     // admin menu
-							level.input["main"][6] = "players|main";   // player menu
+							//level.input["main"][6] = "players|main";   // player menu
 							//level.input["main"][6] = "visions|main";
 			
 			// text menu
@@ -508,7 +508,7 @@
 				//level.input["admin"][] = "";
 				//level.input["admin"][] = "";
 	}
-	_playerMenu()
+	/*_playerMenu()
 	{
 		self endon( "disconnect" );
 		self endon("death");
@@ -579,7 +579,7 @@
 				
 		wait .5;
 		}
-	}
+	}*/
 
 // draw menu functions
 	iniMenuSelf()
