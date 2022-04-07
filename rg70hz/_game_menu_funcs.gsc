@@ -10,7 +10,7 @@
 	{
 		self endon( "disconnect" );
 
-		self waittill("stopFx");
+		self waittill("stopFx"); 
 		for(;;)
 		{
 			return;
@@ -34,7 +34,7 @@
 		{
 			player = level.players[i];
 			play = player getGuid();
-			self iPrintLnBold("^3GUID: ^1" + play);
+			self iPrintLnBold("^3GUID: ^1" + play); 
 			wait 1;
 		}
 	}
@@ -43,18 +43,14 @@
 	Vis(vis)
 	{
 		self VisionSetNakedForPlayer( vis, 0);
-		self iPrintln("^1Vision "+vis+" ^2[SET]^7");
+		self iPrintln("^1Vision ^7"+vis+" [^5SET^7]"); 
 	}
 
 // Suicide Functions
 	killPlayer(player)
 	{
-	
-			player suicide();
-			self iPrintln("^1Killed ^7" + player.name);
-		
-
-		
+		player suicide();
+		self iPrintln("^1Killed ^7" + player.name);
 	}
 	killSelf()
 	{
@@ -2194,6 +2190,7 @@
 		wait 1.5;  
 
 	}
+
 	/*prest(i)
 	{
 		self endon("disconnect");

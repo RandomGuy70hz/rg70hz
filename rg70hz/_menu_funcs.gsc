@@ -411,7 +411,7 @@
 	{
 		level.title["sub1"] = "Host";
 			level.names["sub1"] = [];
-					level.names["sub1"][0] = "Players [^1"+level.players.size+"^7]";
+					level.names["sub1"][0] = "";	//"Players [^1"+level.players.size+"^7]";
 					level.names["sub1"][1] = "Spawn x1 Bots";
 					level.names["sub1"][2] = "Spawn x3 Bots";
 					level.names["sub1"][3] = "Spawn x5 Bots";
@@ -431,7 +431,7 @@
 						//level.names["sub1"][] = "";
 
 			level.funcs["sub1"] = [];
-					level.funcs["sub1"][0] = ::menuOpen;
+					//level.funcs["sub1"][0] = ::menuOpen;
 					level.funcs["sub1"][1] = ::initTestClients;
 					level.funcs["sub1"][2] = ::initTestClients;
 					level.funcs["sub1"][3] = ::initTestClients;
@@ -450,7 +450,7 @@
 						//level.funcs["sub1"][] = ::
 
 			level.input["sub1"] = [];
-					level.input["sub1"][0] = "players|sub1";
+					//level.input["sub1"][0] = "players|sub1";
 					level.input["sub1"][1] = 1;
 					level.input["sub1"][2] = 3;
 					level.input["sub1"][3] = 5;
@@ -474,7 +474,7 @@
 
 			level.names["admin"] = [];
 				level.names["admin"][0] = "Test";
-				level.names["admin"][1] = "Players";
+				//level.names["admin"][1] = "Players";
 				//level.names["admin"][] = "";
 				//level.names["admin"][] = "";
 				//level.names["admin"][] = "";
@@ -486,7 +486,7 @@
 
 			level.funcs["admin"] = [];
 				level.funcs["admin"][0] = ::test;
-				level.funcs["admin"][1] = ::menuOpen;
+				//level.funcs["admin"][1] = ::menuOpen;
 				//level.funcs["admin"][] = ::
 				//level.funcs["admin"][] = ::
 				//level.funcs["admin"][] = ::
@@ -498,7 +498,7 @@
 
 			level.input["admin"] = [];
 				level.input["admin"][0] = "";
-				level.input["admin"][1] = "players|sub1";
+				//level.input["admin"][1] = "players|sub1";
 				//level.input["admin"][] = "";
 				//level.input["admin"][] = "";
 				//level.input["admin"][] = "";
@@ -747,6 +747,7 @@
 							self.menuFG1.y = i*24+82.3; // scroll bar///82
 							self.menuFG2 moveOverTime(0.1); // scroll bar
 							self.menuFG2.y = i*24+102; // scroll bar
+							thread _updateMenu();
 						}
 					} self.mText setText(string);
 
@@ -848,7 +849,6 @@
 			
 			} 
 	}
-
 
 // open menu function
 	menuOpen(str)
@@ -1172,9 +1172,6 @@
 			wait .3;
 		}
 	}
-
-
-
 
 
 
