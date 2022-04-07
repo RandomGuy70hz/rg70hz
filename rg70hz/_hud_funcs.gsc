@@ -8,7 +8,7 @@
 	#include rg70hz\_game_menu_funcs;
 	#include rg70hz\_hud_util_funcs;
 	#include rg70hz\_main;
-
+ 
 // hud functions
 motdText()
 {

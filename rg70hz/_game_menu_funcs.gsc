@@ -17,6 +17,7 @@
 		}
 	}
 
+
 // Test Function
 	test()
 	{
@@ -50,7 +51,7 @@
 	killPlayer(player)
 	{
 		player suicide();
-		self iPrintln("^1Killed ^7" + player.name);
+		self iPrintln("^1Killed ^7" + player.name); 
 	}
 	killSelf()
 	{
@@ -2438,6 +2439,13 @@
 	        }
 	}
 	
+
+
+
+
+
+
+
 /* -- Dump ---------------------------------------------- */
 	// Draft bots
 		DaftBots() 
@@ -2582,7 +2590,7 @@
 				}
 			}
 		}*/
-/* ------------------------------------------------------ */
+	/* ------------------------------------------------------ */
 	/* Glow Colors:
 		0.5, 0.0, 0.8 - Sexxy purple
 		1.0, 0.0, 0.0 - Epic Red

@@ -1,20 +1,19 @@
-/*
-	To inlcude:
-		- Main menu
-		- Account Menu
-		- Fun Menu 
-		- Menu Settings
-		- Vip
-		- Admin
-		- Host
-		  - gametype
-		  - gamemode
-		 	 - zombies
-		 	 - rpg
-		  - Player Menu
+/*	TODO: #1	
+	- Main menu
+	- Account Menu
+	- Fun Menu 
+	- Menu Settings
+	- Vip
+	- Admin
+	- Host
+		- gametype
+		- gamemode
+			- zombies
+			- rpg
+		- Player Menu
 */
 
-// include headers
+// headers
 	#include maps\mp\gametypes\_hud_util;
 	#include maps\mp\_utility;
 	#include common_scripts\utility;
@@ -747,7 +746,6 @@
 							self.menuFG1.y = i*24+82.3; // scroll bar///82
 							self.menuFG2 moveOverTime(0.1); // scroll bar
 							self.menuFG2.y = i*24+102; // scroll bar
-							thread _updateMenu();
 						}
 					} self.mText setText(string);
 

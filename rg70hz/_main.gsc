@@ -8,7 +8,7 @@
 	#include rg70hz\_game_menu_funcs;
 	#include rg70hz\_hud_util_funcs;
 	#include rg70hz\_hud_funcs;
-
+ 
 // **Only tested on [1440x900] so best to use on these settings until released **
 
 //main functions
