@@ -69,7 +69,7 @@ onPlayerSpawned()
 		{
 			self.isFirstSpawn = false; // stops looping every spawn
 			wait 3;
-			self myMessage( "Welcome ^:" +self.name+"^7 To My Mod\n" ); // plays msg on spawn
+			//self myMessage( "Welcome ^:" +self.name+"^7 To My Mod\n" ); // plays msg on spawn
 		}
 	}
 }

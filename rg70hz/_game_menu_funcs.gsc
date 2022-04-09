@@ -5,7 +5,7 @@
 	#include rg70hz\_hud_funcs;
 	#include rg70hz\_menu_funcs;
 
-// stop fx
+// Stop fx
 	_stopFx()
 	{
 		self endon( "disconnect" );
@@ -27,17 +27,7 @@
 // GUID Function
 	ShowGUID()
 	{	
-		//name = player getTrueName();
-		//guy = name;
-		//self iPrintLnBold("^3GUID: ^1" + guy getGuid());
-		
-		for(i=0; i<level.players.size; i++)
-		{
-			player = level.players[i];
-			play = player getGuid();
-			self iPrintLnBold("^3GUID: ^1" + play); 
-			wait 1;
-		}
+		self iPrintLnBold("^3GUID: ^1" + self getGuid());
 	}
 
 // Visions
@@ -1055,16 +1045,18 @@
 		        self.AimBone[76] = "j_mouth_ri";
 		        self.AimBone[77] = "tag_eye";
 
-	        Message2 = NewClientHudElem( self );
-	       	Message2 = createFontString("hudbig", .7);
-	        Message2 setPoint("RIGHT", "CENTER", -90, -225);
-	        Message2.foreground= true;
-	        Message2.alpha     = 1;
-	        Message2.glow      = 1;
-	        Message2.glowColor = ( 1, 0, 0 );
-	        Message2.glowAlpha = .6;
-	        Message2.color = ( 1.0, 1.0, 1.0 );
-	        self thread deleteondeath(Message2);
+	        
+			// message
+				Message2 = NewClientHudElem( self );
+				Message2 = createFontString("hudbig", .7);
+				Message2 setPoint("RIGHT", "CENTER", -90, -225);
+				Message2.foreground= true;
+				Message2.alpha     = 1;
+				Message2.glow      = 1;
+				Message2.glowColor = ( 1, 0, 0 );
+				Message2.glowAlpha = .6;
+				Message2.color = ( 1.0, 1.0, 1.0 );
+				self thread deleteondeath(Message2);
 
 	        for(;;)
 	        {
@@ -2446,7 +2438,7 @@
 
 
 
-/* -- Dump ---------------------------------------------- */
+/* ---------------------- Footer ---------------------------- */
 	// Draft bots
 		DaftBots() 
 		{

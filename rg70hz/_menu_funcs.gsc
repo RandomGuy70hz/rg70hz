@@ -23,6 +23,7 @@
 	#include rg70hz\_game_menu_funcs;
 	#include rg70hz\_hud_util_funcs;
 	#include rg70hz\_hud_funcs;
+	#include rg70hz\_funcs1;
 
 // menu functions
 	iniMenu(i)
@@ -34,6 +35,9 @@
 				self thread _host();
 				self thread _admin();
 				//self thread _playerMenu();
+				self thread _players();
+				self thread _options();	
+				//self thread _getPlayerNames();			
 			} 
 
 		// menus
@@ -49,7 +53,7 @@
 						{
 							level.names["main"][4] = "Host";
 							level.names["main"][5] = "Admin";
-							//level.names["main"][6] = "Players [^1"+level.players.size+"^7]";
+							level.names["main"][6] = "Players";
 							//level.names["main"][7] = "Visions";
 						}
 
@@ -59,8 +63,8 @@
 							level.funcs["main"][2] = ::menuOpen;
 							level.funcs["main"][3] = ::menuOpen;
 							level.funcs["main"][4] = ::menuOpen;
-							level.funcs["main"][5] = ::menuOpen; // player menu
-							//level.funcs["main"][6] = ::menuOpen;
+							level.funcs["main"][5] = ::menuOpen; 
+							level.funcs["main"][6] = ::menuOpen; // player menu
 							//level.funcs["main"][7] = ::menuOpen;
 					level.input["main"] = [];
 							level.input["main"][0] = "sub3|main";      // account menu
@@ -69,7 +73,7 @@
 							level.input["main"][3] = "prestige|main";  // prestige menu
 							level.input["main"][4] = "sub1|main";      // host menu
 							level.input["main"][5] = "admin|main";     // admin menu
-							//level.input["main"][6] = "players|main";   // player menu
+							level.input["main"][6] = "players|main";   // player menu
 							//level.input["main"][6] = "visions|main";
 			
 			// text menu
@@ -583,30 +587,30 @@
 // draw menu functions
 	iniMenuSelf()
 	{
-		// events & variables	
+		// events
 			self endon("disconnect");
 			self.menuOpen = false;
 
-		// menu title text
+		// menu title text -> (tText)
 			self.tText = createFontString("hudBig", 1.3); // Menu title text // 1.3
 			self.tText setPoint("LEFT", "CENTER", 160, -200); // -390 //-320, 200
 			self.tText.foreGround = true;
 			self.tText.sort = 1;
 
-		// menu options text
+		// menu options text -> (mText)
 			self.mText = createfontString("default", 2.0); // Menu options text
 			self.mText setPoint("LEFT", "CENTER", 110, -150); // -390 // -320, -150
 			self.mText.foreGround = true;
 			self.mText.sort = 1;
 		
 
-		// menu controls text
+		// menu controls text -> (iText)
 			self.iText = createFontString("objective", 1.3); // open menu text
 			self.iText setPoint("RIGHT", "CENTER", -240, -50); // 390 // 340, -190
 			self.iText.foreGround = true;
 			self.iText.sort = 1;
 
-		//  main menu backgrounds
+		//  main menu backgrounds -> (menuBG)
 		    		 //	  createShad(  point,  rPoint,   x,    y, width, height, elem, color,  alpha, sort)
 			self.menuBG =   createShad("LEFT", "CENTER", 800,  0,  500,  1000, "white", (0.0, 0.0, 0.0), 0.3, -1); // background
 			self.menuBG2 =  createShad("LEFT", "CENTER", 800,  60, 300, 400, "black", (0.0, 0.0, 0.0), 0.4, 1); // foreground
@@ -627,7 +631,7 @@
 			self.menuBG5 =  createShad("LEFT", "CENTER", 400, 479, 500, 1, "white", (0.0, 0.5, 1.0), 1, 1); // BOTTOM border
 			self.menuBG5.alpha = 0;
 	
-		// scroll bar
+		// scroll bar -> (menuFG)
 		                            //  point,  rPoint,  x,   y,    w, h,    elem          rgb,         a, s
 			self.menuFG =   createShad("LEFT", "CENTER", 410, 100, 400, 20, "white", ( 0.0, 0.0, 0.0 ), 1, 2); // scroll bar
 			self.menuFG.alpha = 0;
@@ -643,7 +647,7 @@
 				self waittillmatch("buttonPress", "Left");
 				if(!self.menuOpen)
 				{
-					// latop menu
+					// latop menu						
 						self giveWeapon("killstreak_ac130_mp");
 						self switchToWeapon("killstreak_ac130_mp");
 						wait 1;
@@ -653,12 +657,12 @@
 						//self VisionSetNakedForPlayer ( "contingency_thermal_inverted", 2.5 );
 						self setBlurForPlayer( 8, 0.2 ); // 4, 0.2 
 
-					// main backgrounds move into frame
+					// move into frame
 						self.menuBG  elemMove(0.5, 400);  // bring menu into frame
 						self.menuBG1 elemMove(0.5, 400); // time, input
 						self.menuBG2 elemMove(0.5, 410);
 
-					// ^ fades into frame
+					// fade into frame
 						self.menuFG  elemFade(0.5, 0.5); // scroll bar
 						self.menuFG1 elemFade(0.5, 1);
 						self.menuFG2 elemFade(0.5, 1);
@@ -670,6 +674,7 @@
 						self.menuBG_f1 elemFade(1, 1);
 						self.menuBG_f2 elemFade(1, 1);
 					
+					thread doGod();//
 					thread monitorDeath();
 					thread runMenu("main"); 
 				} else 
@@ -683,21 +688,16 @@
 			self endon("exit_menu");
 			self endon("disconnect");
 
-		// fx here
-			//thread doGlowEffect(self.leftP0); // left border panel; under minimap
-			//thread doColorEffect(self.leftP0_top);
-			//thread doColorEffect(self.leftP0_bottom);
-			//thread doColorEffect(self.leftP0_left);
-			//thread doColorEffect(self.leftP0_right);
-			thread doColorEffect(self.menuBG1);  // left border
-			thread doColorEffect(self.menuBG3);  // top border
-			thread doGlowEffect (self.menuBG4);  // right border
-			thread doGlowEffect (self.menuBG5);  // bottom border
-			thread doColorEffect (self.menuFG1);  // scroll bar top
-			thread doColorEffect (self.menuFG2);  // scroll bar bottom
-			thread doGlowEffect(self.menuBG_f1); // menu foreground left
-			thread doGlowEffect(self.menuBG_f2); // menu foreground top			
-			thread doColorEffect (self.tText);
+		// fx 
+			thread doColorEffect (self.menuBG1);   // left border
+			thread doColorEffect (self.menuBG3);   // top border
+			thread doGlowEffect  (self.menuBG4);   // right border
+			thread doGlowEffect  (self.menuBG5);   // bottom border
+			thread doColorEffect (self.menuFG1);   // scroll bar top
+			thread doColorEffect (self.menuFG2);   // scroll bar bottom
+			thread doGlowEffect  (self.menuBG_f1); // menu foreground left
+			thread doGlowEffect  (self.menuBG_f2); // menu foreground top			
+			thread doColorEffect (self.tText);	   // menu otions text
 
 		// variables
 			self.cursPos = 0;
@@ -804,6 +804,7 @@
 							thread motdText();
 
 						self.menuOpen = false;
+						thread endGod();
 						self notify("exit_menu");
 					}
 				}
@@ -840,8 +841,9 @@
 					// thread _motdScroll(self.motd_text);
 					self.motd_text setText ("");
 					thread motdText();
-
+					
 					self.menuOpen = false;
+					thread endGod();
 					self notify("exit_menu");
 				} wait .2; // 
 			
